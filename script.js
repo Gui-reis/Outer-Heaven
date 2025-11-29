@@ -1,33 +1,54 @@
-// Lista de oportunidades em memória (poderia vir de um backend depois)
-const opportunities = [
-  {
-    title: "Desenvolvedor Frontend React",
-    company: "TechWave Solutions",
-    work_type: "remote",
-    duration: "Projeto pontual",
-    payment: "R$ 5.000 - R$ 7.000",
-    location: "Qualquer lugar do Brasil",
-    skills: "React · TypeScript · REST API",
-    description:
-      "Procura-se dev frontend para atuar em um painel de controle de dados em tempo real. Projeto de 3 meses com possibilidade de extensão."
-  },
-  {
-    title: "Backend Python / Django",
-    company: "FinTrack Digital",
-    work_type: "hybrid",
-    duration: "6 meses",
-    payment: "R$ 8.000 / mês",
-    location: "São Paulo - SP",
-    skills: "Python · Django · PostgreSQL",
-    description:
-      "Desenvolvimento de APIs para sistema financeiro. Experiência com integração de sistemas e bancos de dados relacionais é desejável."
+const STORAGE_KEY = "oh_opportunities";
+
+// Dados iniciais (seed) – só usados se ainda não existir nada no localStorage
+function getInitialOpportunities() {
+  return [
+    {
+      title: "Desenvolvedor Frontend React",
+      company: "TechWave Solutions",
+      work_type: "remote",
+      duration: "Projeto pontual",
+      payment: "R$ 5.000 - R$ 7.000",
+      location: "Qualquer lugar do Brasil",
+      skills: "React · TypeScript · REST API",
+      description:
+        "Painel de controle em tempo real. Projeto de 3 meses com possibilidade de extensão."
+    },
+    {
+      title: "Backend Python / Django",
+      company: "FinTrack Digital",
+      work_type: "hybrid",
+      duration: "6 meses",
+      payment: "R$ 8.000 / mês",
+      location: "São Paulo - SP",
+      skills: "Python · Django · PostgreSQL",
+      description:
+        "Desenvolvimento de APIs para sistema financeiro. Integrações e bancos relacionais."
+    }
+  ];
+}
+
+function loadOpportunities() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch (e) {
+      console.error("Erro ao ler oportunidades do localStorage:", e);
+    }
   }
-];
 
-const form = document.getElementById("job-form");
-const cardsContainer = document.getElementById("cards-container");
+  const initial = getInitialOpportunities();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+  return initial;
+}
 
-// Função utilitária: retorna rótulo e classe da tag pelo tipo de trabalho
+function saveOpportunities(opportunities) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(opportunities));
+}
+
+let opportunities = loadOpportunities();
+
 function getTagInfo(workType) {
   switch (workType) {
     case "remote":
@@ -41,7 +62,6 @@ function getTagInfo(workType) {
   }
 }
 
-// Cria o elemento DOM do card
 function createCardElement(opportunity) {
   const { label, className } = getTagInfo(opportunity.work_type);
 
@@ -77,41 +97,58 @@ function createCardElement(opportunity) {
   return article;
 }
 
-// Renderiza todas as oportunidades na tela
-function renderCards() {
-  cardsContainer.innerHTML = ""; // limpa
+function renderCards(cardsContainer) {
+  if (!cardsContainer) return;
+  cardsContainer.innerHTML = "";
+
   opportunities.forEach((op) => {
     const cardEl = createCardElement(op);
     cardsContainer.appendChild(cardEl);
   });
 }
 
-// Lida com o envio do formulário
-form.addEventListener("submit", function (event) {
-  event.preventDefault(); // impede o refresh da página
+function setupForm(form) {
+  if (!form) return;
 
-  const formData = new FormData(form);
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
 
-  const newOpportunity = {
-    title: formData.get("title"),
-    company: formData.get("company"),
-    work_type: formData.get("work_type"),
-    duration: formData.get("duration"),
-    payment: formData.get("payment"),
-    location: formData.get("location"),
-    skills: formData.get("skills"),
-    description: formData.get("description")
-  };
+    const formData = new FormData(form);
 
-  // Adiciona no início da lista (aparece como o primeiro card)
-  opportunities.unshift(newOpportunity);
+    const newOpportunity = {
+      title: formData.get("title"),
+      company: formData.get("company"),
+      work_type: formData.get("work_type"),
+      duration: formData.get("duration"),
+      payment: formData.get("payment"),
+      location: formData.get("location"),
+      skills: formData.get("skills"),
+      description: formData.get("description")
+    };
 
-  // Re-renderiza os cards
-  renderCards();
+    // Adiciona nova oportunidade no início
+    opportunities.unshift(newOpportunity);
+    saveOpportunities(opportunities);
 
-  // Limpa o formulário
-  form.reset();
+    // Limpa o form
+    form.reset();
+
+    // Opcional: redireciona para a página de oportunidades
+    window.location.href = "oportunidades.html";
+  });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const cardsContainer = document.getElementById("cards-container");
+  const form = document.getElementById("job-form");
+
+  // Se estiver na página de lista, renderiza cards
+  if (cardsContainer) {
+    renderCards(cardsContainer);
+  }
+
+  // Se estiver na página de criação, configura o form
+  if (form) {
+    setupForm(form);
+  }
 });
-
-// Render inicial ao carregar a página
-renderCards();
