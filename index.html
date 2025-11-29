@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Marketplace - Criar Oportunidade</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header__logo">
+      <span class="logo__icon">⚡</span>
+      <span class="logo__text">FreelaHub</span>
+    </div>
+
+    <nav class="header__nav">
+      <a href="#" class="nav__link nav__link--active">Oportunidades</a>
+      <a href="#" class="nav__link">Perfil</a>
+      <a href="#" class="nav__link">Configurações</a>
+    </nav>
+  </header>
+
+  <main class="main">
+    <!-- SEÇÃO: FORMULÁRIO DE CRIAÇÃO -->
+    <section class="create-section">
+      <h1 class="create-section__title">Criar nova oportunidade</h1>
+      <p class="create-section__subtitle">
+        Preencha os campos abaixo para publicar uma nova oportunidade de trabalho.
+      </p>
+
+      <form id="job-form" class="job-form">
+        <div class="job-form__row">
+          <div class="job-form__field">
+            <label for="title">Título da vaga</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              required
+              placeholder="Ex: Desenvolvedor Frontend React"
+            />
+          </div>
+
+          <div class="job-form__field">
+            <label for="company">Empresa</label>
+            <input
+              type="text"
+              id="company"
+              name="company"
+              required
+              placeholder="Ex: TechWave Solutions"
+            />
+          </div>
+        </div>
+
+        <div class="job-form__row">
+          <div class="job-form__field">
+            <label for="work_type">Tipo de trabalho</label>
+            <select id="work_type" name="work_type" required>
+              <option value="remote">Remoto</option>
+              <option value="hybrid">Híbrido</option>
+              <option value="onsite">Presencial</option>
+            </select>
+          </div>
+
+          <div class="job-form__field">
+            <label for="duration">Duração / Regime</label>
+            <input
+              type="text"
+              id="duration"
+              name="duration"
+              placeholder="Ex: 3 meses, CLT, PJ..."
+            />
+          </div>
+
+          <div class="job-form__field">
+            <label for="payment">Pagamento</label>
+            <input
+              type="text"
+              id="payment"
+              name="payment"
+              placeholder="Ex: R$ 5.000 por projeto"
+            />
+          </div>
+        </div>
+
+        <div class="job-form__row">
+          <div class="job-form__field">
+            <label for="location">Localização</label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              placeholder="Ex: Remoto / São Paulo - SP"
+            />
+          </div>
+
+          <div class="job-form__field">
+            <label for="skills">Skills principais</label>
+            <input
+              type="text"
+              id="skills"
+              name="skills"
+              placeholder="Ex: React · TypeScript · API REST"
+            />
+          </div>
+        </div>
+
+        <div class="job-form__field job-form__field--full">
+          <label for="description">Descrição</label>
+          <textarea
+            id="description"
+            name="description"
+            rows="3"
+            placeholder="Descreva brevemente o projeto, responsabilidades, requisitos..."
+          ></textarea>
+        </div>
+
+        <button type="submit" class="job-form__button">
+          Criar oportunidade
+        </button>
+      </form>
+    </section>
+
+    <!-- SEÇÃO: LISTA DE CARDS -->
+    <section class="toolbar">
+      <div>
+        <h2 class="toolbar__title">Oportunidades publicadas</h2>
+        <p class="toolbar__subtitle">
+          Veja as oportunidades que você já criou.
+        </p>
+      </div>
+    </section>
+
+    <section class="cards" id="cards-container">
+      <!-- Os cards serão inseridos aqui via JavaScript -->
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
