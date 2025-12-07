@@ -1,54 +1,29 @@
-const STORAGE_KEY = "oh_opportunities";
+// URL base da sua API Node
+const API_BASE_URL = "http://localhost:3000";
 
-// Dados iniciais (seed) – só usados se ainda não existir nada no localStorage
-function getInitialOpportunities() {
-  return [
-    {
-      title: "Desenvolvedor Frontend React",
-      company: "TechWave Solutions",
-      work_type: "remote",
-      duration: "Projeto pontual",
-      payment: "R$ 5.000 - R$ 7.000",
-      location: "Qualquer lugar do Brasil",
-      skills: "React · TypeScript · REST API",
-      description:
-        "Painel de controle em tempo real. Projeto de 3 meses com possibilidade de extensão."
-    },
-    {
-      title: "Backend Python / Django",
-      company: "FinTrack Digital",
-      work_type: "hybrid",
-      duration: "6 meses",
-      payment: "R$ 8.000 / mês",
-      location: "São Paulo - SP",
-      skills: "Python · Django · PostgreSQL",
-      description:
-        "Desenvolvimento de APIs para sistema financeiro. Integrações e bancos relacionais."
-    }
-  ];
-}
+let opportunities = [];
 
-function loadOpportunities() {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    try {
-      return JSON.parse(stored);
-    } catch (e) {
-      console.error("Erro ao ler oportunidades do localStorage:", e);
+// =============================
+// 1. Carregar oportunidades (GET)
+// =============================
+async function loadOpportunitiesFromApi() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/opportunities`);
+
+    if (!response.ok) {
+      console.error("Erro ao buscar oportunidades:", response.status);
+      return;
     }
+
+    opportunities = await response.json();
+  } catch (err) {
+    console.error("Erro de rede ao buscar oportunidades:", err);
   }
-
-  const initial = getInitialOpportunities();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
-  return initial;
 }
 
-function saveOpportunities(opportunities) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(opportunities));
-}
-
-let opportunities = loadOpportunities();
-
+// =============================
+// 2. Utilitários de UI
+// =============================
 function getTagInfo(workType) {
   switch (workType) {
     case "remote":
@@ -107,48 +82,72 @@ function renderCards(cardsContainer) {
   });
 }
 
-function setupForm(form) {
-  if (!form) return;
+// =============================
+// 3. Criar oportunidade (POST)
+// =============================
+async function createOpportunityFromForm(form) {
+  const formData = new FormData(form);
 
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
+  const payload = {
+    title: formData.get("title"),
+    company: formData.get("company"),
+    work_type: formData.get("work_type"),
+    duration: formData.get("duration") || undefined,
+    payment: formData.get("payment") || undefined,
+    location: formData.get("location") || undefined,
+    skills: formData.get("skills") || undefined,
+    description: formData.get("description") || undefined
+  };
 
-    const formData = new FormData(form);
+  try {
+    const response = await fetch(`${API_BASE_URL}/opportunities`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
 
-    const newOpportunity = {
-      title: formData.get("title"),
-      company: formData.get("company"),
-      work_type: formData.get("work_type"),
-      duration: formData.get("duration"),
-      payment: formData.get("payment"),
-      location: formData.get("location"),
-      skills: formData.get("skills"),
-      description: formData.get("description")
-    };
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => null);
+      console.error("Erro ao criar oportunidade:", response.status, errorBody);
+      alert("Erro ao criar oportunidade. Verifique os campos obrigatórios.");
+      return;
+    }
 
-    // Adiciona nova oportunidade no início
-    opportunities.unshift(newOpportunity);
-    saveOpportunities(opportunities);
-
-    // Limpa o form
-    form.reset();
-
-    // Opcional: redireciona para a página de oportunidades
-    window.location.href = "oportunidades.html";
-  });
+    const created = await response.json();
+    console.log("Oportunidade criada com sucesso:", created);
+  } catch (err) {
+    console.error("Erro de rede ao criar oportunidade:", err);
+    alert("Erro de rede ao criar oportunidade.");
+  }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+// =============================
+// 4. Inicialização por página
+// =============================
+window.addEventListener("DOMContentLoaded", async () => {
   const cardsContainer = document.getElementById("cards-container");
   const form = document.getElementById("job-form");
 
-  // Se estiver na página de lista, renderiza cards
+  // Página de listagem: oportunidades.html
   if (cardsContainer) {
+    await loadOpportunitiesFromApi();
     renderCards(cardsContainer);
   }
 
-  // Se estiver na página de criação, configura o form
+  // Página de criação: criar-oportunidade.html
   if (form) {
-    setupForm(form);
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      await createOpportunityFromForm(form);
+
+      // limpa o form
+      form.reset();
+
+      // redireciona para a lista
+      window.location.href = "oportunidades.html";
+    });
   }
 });
