@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OuterHeaven — Criar deal</title>
+  <meta name="description" content="Wizard de definição de escopo, entregáveis e milestones." />
+  <link rel="stylesheet" href="wizard.css" />
+</head>
+
+<body>
+  <div class="bg" aria-hidden="true">
+    <div class="blob blob--a"></div>
+    <div class="blob blob--b"></div>
+    <div class="noise"></div>
+  </div>
+
+  <header class="top">
+    <div class="brand">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 2l8.5 4.8v10.4L12 22l-8.5-4.8V6.8L12 2z" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M12 6.5l5.6 3.2v4.6L12 17.5l-5.6-3.2V9.7L12 6.5z" stroke="currentColor" stroke-width="1.6"/>
+        </svg>
+      </span>
+      <div class="brand__text">
+        <div class="brand__name">OuterHeaven</div>
+        <div class="brand__tag">Wizard • Deal 1×1</div>
+      </div>
+    </div>
+
+    <div class="top__right">
+      <button class="linkbtn" id="btnReset" type="button" title="Limpar dados salvos">Reset</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <aside class="side">
+      <div class="progress">
+        <div class="progress__bar"><div class="progress__fill" id="progressFill"></div></div>
+        <div class="progress__meta">
+          <span id="progressLabel">Etapa 0</span>
+          <span class="muted" id="progressPct">0%</span>
+        </div>
+      </div>
+
+      <nav class="steps" aria-label="Etapas do wizard">
+        <button class="step" data-step="0" type="button"><span class="step__n">0</span> Identificação</button>
+        <button class="step" data-step="1" type="button"><span class="step__n">1</span> Contexto</button>
+        <button class="step" data-step="2" type="button"><span class="step__n">2</span> Stakeholders</button>
+        <button class="step" data-step="3" type="button"><span class="step__n">3</span> Escopo</button>
+        <button class="step" data-step="4" type="button"><span class="step__n">4</span> Entregáveis</button>
+        <button class="step" data-step="5" type="button"><span class="step__n">5</span> Qualidade</button>
+        <button class="step" data-step="6" type="button"><span class="step__n">6</span> Aceite/Disputa</button>
+        <button class="step" data-step="7" type="button"><span class="step__n">7</span> Change Request</button>
+        <button class="step" data-step="8" type="button"><span class="step__n">8</span> Milestones</button>
+        <button class="step" data-step="9" type="button"><span class="step__n">✓</span> Resumo</button>
+      </nav>
+
+      <p class="side__hint">
+        Dica: itens em lista são “1 por linha”. O wizard valida e sugere ajustes quando detectar ambiguidade.
+      </p>
+    </aside>
+
+    <section class="panel">
+      <div class="panel__title">
+        <h1 id="panelTitle">Transforme um acordo em entregas objetivas — sem ambiguidade.</h1>
+        <p class="panel__sub" id="panelSub">Preencha passo a passo. Você pode voltar e editar quando quiser.</p>
+      </div>
+
+      <div class="errors" id="errors" hidden></div>
+
+      <!-- ===================== STEP 0 ===================== -->
+      <section class="stepPane" data-pane="0">
+        <h2>Etapa 0 — Identificação do serviço</h2>
+
+        <div class="grid2">
+          <div class="field">
+            <label for="projName">0.1 Nome do projeto</label>
+            <input id="projName" type="text" placeholder="Ex.: Landing page + formulário de contato" minlength="3" maxlength="80"/>
+            <div class="help">3–80 chars. Evite nomes genéricos.</div>
+          </div>
+
+          <div class="field">
+            <label>0.2 Categoria principal</label>
+            <div class="radios" id="category">
+              <label><input type="radio" name="category" value="Digital/Software"> Digital/Software</label>
+              <label><input type="radio" name="category" value="Design/Conteúdo"> Design/Conteúdo</label>
+              <label><input type="radio" name="category" value="Consultoria/Treinamento"> Consultoria/Treinamento</label>
+              <label><input type="radio" name="category" value="Serviço presencial"> Serviço presencial</label>
+              <label><input type="radio" name="category" value="Produção física"> Produção física</label>
+              <label><input type="radio" name="category" value="Outro"> Outro</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>0.3 Local de execução</label>
+            <div class="radios" id="executionMode">
+              <label><input type="radio" name="executionMode" value="Remoto"> Remoto</label>
+              <label><input type="radio" name="executionMode" value="Presencial"> Presencial</label>
+              <label><input type="radio" name="executionMode" value="Híbrido"> Híbrido</label>
+            </div>
+            <div class="row" id="locationRow" hidden>
+              <input id="city" type="text" placeholder="Cidade" />
+              <input id="district" type="text" placeholder="Bairro (opcional)" />
+            </div>
+            <div class="help">Se Presencial/Híbrido, informe cidade/bairro (sem endereço exato).</div>
+          </div>
+
+          <div class="field">
+            <label>0.4 Prazo desejado</label>
+            <div class="row">
+              <input id="deadline" type="date" />
+              <label class="check"><input id="deadlineFlexible" type="checkbox"> Flexível</label>
+            </div>
+            <div class="row" id="shortDeadlineRow" hidden>
+              <input id="deadlineMotivation" type="text" placeholder="Motivação (se < 7 dias)" />
+              <input id="approvalAvailability" type="text" placeholder="Disponibilidade de aprovações (ex.: “respondo em até 4h úteis”)" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== STEP 1 ===================== -->
+      <section class="stepPane" data-pane="1">
+        <h2>Etapa 1 — Contexto e objetivos</h2>
+
+        <div class="field">
+          <label for="problem">1.1 Qual problema você quer resolver?</label>
+          <textarea id="problem" rows="4" placeholder="Ex.: Hoje o time faz X manualmente; isso causa Y; queremos reduzir Z..."></textarea>
+          <div class="help">1–5 frases. Tente conter “hoje acontece X → isso causa Y”.</div>
+        </div>
+
+        <div class="field">
+          <label for="successBullets">1.2 O que significa “deu certo” no final? (3 a 5 itens)</label>
+          <textarea id="successBullets" rows="5" placeholder="1 por linha&#10;Ex.: Página carrega em até 2s em 4G&#10;Ex.: Formulário envia email e salva no CRM"></textarea>
+          <div class="help">3–5 itens, verificáveis. Se aparecer fuzzy word, o wizard vai pedir métrica/checklist.</div>
+        </div>
+
+        <div class="field">
+          <label for="measurableGoals">1.3 Objetivos mensuráveis (opcional, recomendado)</label>
+          <textarea id="measurableGoals" rows="4" placeholder="1 por linha&#10;Ex.: reduzir custo em 20%&#10;Ex.: reduzir erros para &lt; 1%"></textarea>
+          <div class="help">Sugestões: tempo, custo, taxa, redução de erro, volume, satisfação.</div>
+        </div>
+      </section>
+
+      <!-- ===================== STEP 2 ===================== -->
+      <section class="stepPane" data-pane="2">
+        <h2>Etapa 2 — Stakeholders e decisão</h2>
+
+        <div class="grid2">
+          <div class="field">
+            <label>2.1 Solicitante (ponto de contato)</label>
+            <div class="row">
+              <input id="requesterName" type="text" placeholder="Nome" />
+              <input id="requesterContact" type="text" placeholder="Contato (email/whats)" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>2.2 Aprovador final (decisor)</label>
+            <div class="row">
+              <input id="approverName" type="text" placeholder="Nome" />
+              <input id="approverRole" type="text" placeholder="Papel (ex.: gerente, dono, cliente)" />
+            </div>
+            <div class="help">Obrigatório 1 decisor final.</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>2.3 Outros envolvidos (opcional)</label>
+          <div class="stack" id="othersStack"></div>
+          <div class="row">
+            <button class="btn btn--ghost" type="button" id="addOther">+ Adicionar envolvido</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== STEP 3 ===================== -->
+      <section class="stepPane" data-pane="3">
+        <h2>Etapa 3 — Escopo (in / out)</h2>
+
+        <div class="field">
+          <label for="inScope">3.1 O que está INCLUÍDO? (5 a 15 bullets)</label>
+          <textarea id="inScope" rows="7" placeholder="1 por linha&#10;Evite “tudo”, “completo”, “total”..."></textarea>
+          <div class="help">5–15 itens. Se aparecer “completo/total/tudo”, será pedido detalhamento.</div>
+        </div>
+
+        <div class="field">
+          <label for="outScope">3.2 O que está EXPLICITAMENTE FORA do escopo? (mín. 3 bullets)</label>
+          <textarea id="outScope" rows="6" placeholder="1 por linha&#10;Ex.: Não inclui hospedagem&#10;Ex.: Não inclui criação de conteúdo"></textarea>
+          <div class="help">Obrigatório (protege muito contra disputa).</div>
+        </div>
+
+        <div class="field">
+          <label for="assumptions">3.3 Assunções</label>
+          <textarea id="assumptions" rows="5" placeholder="1 por linha&#10;Ex.: Cliente fornece acesso ao ambiente&#10;Ex.: Dados estarão disponíveis"></textarea>
+        </div>
+
+        <div class="field">
+          <label>3.4 Dependências externas</label>
+          <div class="checks" id="depsChecks">
+            <label><input type="checkbox" data-dep="localAccess"> Acesso a local?</label>
+            <label><input type="checkbox" data-dep="materials"> Fornecimento de material/equipamento?</label>
+            <label><input type="checkbox" data-dep="accounts"> Contas/APIs/chaves?</label>
+            <label><input type="checkbox" data-dep="thirdApproval"> Aprovação de terceiros?</label>
+          </div>
+
+          <div class="depsDetails" id="depsDetails" hidden>
+            <div class="help">Se marcou “sim”, preencha: quem fornece, quando, e o que acontece se atrasar.</div>
+            <div class="grid3">
+              <input id="depWho" type="text" placeholder="Quem fornece (nome/papel)" />
+              <input id="depWhen" type="text" placeholder="Quando (data/condição)" />
+              <input id="depIfLate" type="text" placeholder="Se atrasar, o que acontece? (impacto/ação)" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== STEP 4 ===================== -->
+      <section class="stepPane" data-pane="4">
+        <h2>Etapa 4 — Entregáveis</h2>
+        <p class="muted">Adicione 1 ou mais entregáveis. Cada entregável tem critérios de aceitação obrigatórios.</p>
+
+        <div class="stack" id="deliverablesStack"></div>
+
+        <div class="row">
+          <button class="btn btn--primary" type="button" id="addDeliverable">+ Adicionar entregável</button>
+        </div>
+      </section>
+
+      <!-- ===================== STEP 5 ===================== -->
+      <section class="stepPane" data-pane="5">
+        <h2>Etapa 5 — Qualidade do serviço (SLA do projeto)</h2>
+
+        <div class="grid2">
+          <div class="field">
+            <label>5.1 Tempo de resposta</label>
+            <div class="row">
+              <input id="respTime" type="number" min="1" placeholder="24" />
+              <select id="respUnit">
+                <option value="h úteis">h úteis</option>
+                <option value="h">h</option>
+                <option value="dias úteis">dias úteis</option>
+                <option value="dias">dias</option>
+              </select>
+            </div>
+            <div class="help">Ex.: “até 24h úteis”.</div>
+          </div>
+
+          <div class="field">
+            <label for="workWindows">5.2 Janelas de trabalho/atendimento</label>
+            <input id="workWindows" type="text" placeholder="Ex.: Seg–Sex 9h–18h BRT" />
+          </div>
+
+          <div class="field">
+            <label>5.3 Prazo para correção pós-aceite</label>
+            <div class="row">
+              <input id="warrantyDays" type="number" min="0" placeholder="7" />
+              <span class="muted">dias</span>
+            </div>
+            <input id="severities" type="text" placeholder="Se citar “sem bugs”, descreva severidades (crítico/alto/médio/baixo) e prazos." />
+          </div>
+
+          <div class="field">
+            <label>5.4 Segurança/confidencialidade</label>
+            <div class="checks">
+              <label><input id="nda" type="checkbox"> NDA/confidencial</label>
+              <label><input id="lgpd" type="checkbox"> Dados sensíveis (LGPD)</label>
+              <label><input id="storage" type="checkbox"> Armazenamento e descarte</label>
+            </div>
+            <div class="row" id="lgpdRow" hidden>
+              <input id="lgpdWhat" type="text" placeholder="Quais dados?" />
+              <input id="lgpdHowLong" type="text" placeholder="Guardar por quanto tempo?" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== STEP 6 ===================== -->
+      <section class="stepPane" data-pane="6">
+        <h2>Etapa 6 — Processo de aceite e disputa</h2>
+
+        <div class="field">
+          <label>6.1 Como o cliente aprova um entregável?</label>
+          <div class="radios" id="acceptMethod">
+            <label><input type="radio" name="acceptMethod" value="Checklist na plataforma"> Checklist de aceite na plataforma</label>
+            <label><input type="radio" name="acceptMethod" value="Evidência anexada + Aprovar"> Evidência anexada + “Aprovar”</label>
+            <label><input type="radio" name="acceptMethod" value="Vídeo chamada + ata"> Aprovação por vídeo chamada + ata (anexo)</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>6.2 Prazo máximo para revisar e aprovar/reprovar</label>
+          <div class="row">
+            <input id="reviewDays" type="number" min="1" max="15" placeholder="5" />
+            <span class="muted">dias úteis</span>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label for="defectVsChange_defect">6.3 Defeito (não conformidade) — exemplos</label>
+            <textarea id="defectVsChange_defect" rows="4" placeholder="Ex.: “não atende critério de aceite definido”"></textarea>
+          </div>
+          <div class="field">
+            <label for="defectVsChange_change">6.3 Mudança de escopo — exemplos</label>
+            <textarea id="defectVsChange_change" rows="4" placeholder="Ex.: “novo requisito não previsto”"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== STEP 7 ===================== -->
+      <section class="stepPane" data-pane="7">
+        <h2>Etapa 7 — Mudança de escopo (Change Request)</h2>
+
+        <div class="field">
+          <label>7.1 Você permite mudanças de escopo?</label>
+          <div class="radios" id="crPolicy">
+            <label><input type="radio" name="crPolicy" value="Sim, via CR"> Sim, via CR</label>
+            <label><input type="radio" name="crPolicy" value="Não, apenas novo contrato"> Não, apenas novo contrato</label>
+          </div>
+        </div>
+
+        <div class="field" id="crFormBlock" hidden>
+          <label>7.2 Formulário de CR (modelo obrigatório)</label>
+          <div class="grid2">
+            <textarea id="crWhat" rows="3" placeholder="O que mudar"></textarea>
+            <textarea id="crWhy" rows="3" placeholder="Por quê"></textarea>
+            <textarea id="crImpact" rows="3" placeholder="Impacto (prazo/custo/entregáveis)"></textarea>
+            <label class="check"><input id="crApproverRequired" type="checkbox"> Exigir aprovação do decisor final</label>
+          </div>
+          <div class="help">No MVP, isso é um template. Mais tarde o backend gera “aditivo” e atualiza milestones.</div>
+        </div>
+      </section>
+
+      <!-- ===================== STEP 8 ===================== -->
+      <section class="stepPane" data-pane="8">
+        <h2>Etapa 8 — Milestones</h2>
+
+        <div class="field">
+          <label>8.1 Quantos milestones?</label>
+          <div class="row">
+            <input id="milestoneCount" type="number" min="1" max="10" placeholder="3" />
+            <button class="btn btn--ghost" type="button" id="applyMilestoneCount">Aplicar</button>
+          </div>
+          <div class="help">Depois selecione entregáveis e distribua percentuais (total 100%).</div>
+        </div>
+
+        <div class="stack" id="milestonesStack"></div>
+      </section>
+
+      <!-- ===================== STEP 9 (SUMMARY) ===================== -->
+      <section class="stepPane" data-pane="9">
+        <h2>Resumo</h2>
+        <p class="muted">Esse JSON é o que o backend vai salvar depois. Por enquanto é só visualização.</p>
+
+        <div class="row">
+          <button class="btn btn--primary" type="button" id="btnExport">Copiar JSON</button>
+          <button class="btn btn--ghost" type="button" id="btnDownload">Baixar .json</button>
+        </div>
+
+        <pre class="code" id="summaryJson">{}</pre>
+      </section>
+
+      <div class="navBar">
+        <button class="btn btn--ghost" type="button" id="btnBack">Voltar</button>
+        <div class="navBar__mid">
+          <span class="muted" id="stepHint"></span>
+        </div>
+        <button class="btn btn--primary" type="button" id="btnNext">Avançar</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="wizard.js"></script>
+</body>
+</html>
