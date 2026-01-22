@@ -98,8 +98,7 @@ function defaultState(){
     },
     step1: {
       problem: "",
-      successBullets: [],
-      measurableGoals: []
+      successBullets: []
     },
     step2: {
       requesterName: "",
@@ -299,18 +298,12 @@ function bindInputs(){
   $("#city").addEventListener("input", e => { state.step0.city = e.target.value; saveState(); });
   $("#district").addEventListener("input", e => { state.step0.district = e.target.value; saveState(); });
 
-  
- 
-
   // Step 1
   $("#problem").value = state.step1.problem;
   $("#problem").addEventListener("input", e => { state.step1.problem = e.target.value; saveState(); });
 
   $("#successBullets").value = (state.step1.successBullets ?? []).join("\n");
   $("#successBullets").addEventListener("input", e => { state.step1.successBullets = linesToList(e.target.value); saveState(); });
-
-  $("#measurableGoals").value = (state.step1.measurableGoals ?? []).join("\n");
-  $("#measurableGoals").addEventListener("input", e => { state.step1.measurableGoals = linesToList(e.target.value); saveState(); });
 
   // Step 2
   $("#requesterName").value = state.step2.requesterName;
@@ -864,17 +857,9 @@ function validateStep(step){
     else if (looksLikeNoContextProblem(p)) errs.push("1.1 Parece faltar contexto. Tente: “Hoje acontece X → isso causa Y → queremos Z”.");
 
     const bullets = state.step1.successBullets || [];
-    if (bullets.length < 3 || bullets.length > 5) errs.push("1.2 “Deu certo” deve ter 3 a 5 itens.");
     bullets.forEach((b, i) => {
       if (!validateVerifiableBullet(b)){
         errs.push(`1.2 Item ${i+1} parece subjetivo (“fuzzy”). Inclua métrica/unidade/checklist verificável.`);
-      }
-    });
-
-    // goals optional, but if provided must not be all fuzzy
-    (state.step1.measurableGoals || []).forEach((g, i) => {
-      if (containsFuzzy(g) && !containsSomeUnitOrNumber(g)){
-        errs.push(`1.3 Objetivo mensurável ${i+1} está subjetivo. Inclua números/unidade.`);
       }
     });
   }
@@ -887,24 +872,14 @@ function validateStep(step){
 
   if (step === 3){
     const ins = state.step3.inScope || [];
-    const outs = state.step3.outScope || [];
-    if (ins.length < 5 || ins.length > 15) errs.push("3.1 INCLUSO deve ter 5 a 15 bullets.");
+    
     ins.forEach((b, i) => {
       if (!validateNoScopeBroadWords(b)){
         errs.push(`3.1 Item ${i+1} contém “tudo/total/completo”. Detalhe melhor.`);
       }
     });
 
-    if (outs.length < 3) errs.push("3.2 FORA do escopo deve ter no mínimo 3 bullets.");
-
-    const deps = state.step3.deps;
-    const anyDep = deps.localAccess || deps.materials || deps.accounts || deps.thirdApproval;
-    if (anyDep){
-      const det = deps.details;
-      if (!det.who.trim()) errs.push("3.4 Dependências: informe quem fornece.");
-      if (!det.when.trim()) errs.push("3.4 Dependências: informe quando.");
-      if (!det.ifLate.trim()) errs.push("3.4 Dependências: informe o que acontece se atrasar.");
-    }
+    
   }
 
   if (step === 4){
