@@ -303,3 +303,5 @@ input:focus, textarea:focus, select:focus{
   cursor: pointer;
 }
 .smallbtn:hover{ background: rgba(255,255,255,.06); }
+
+[hidden] { display: none !important; }
