@@ -74,51 +74,38 @@
       <section class="stepPane" data-pane="0">
         <h2>Etapa 0 — Identificação do serviço</h2>
 
-        <div class="grid2">
-          <div class="field">
-            <label for="projName">0.1 Nome do projeto</label>
-            <input id="projName" type="text" placeholder="Ex.: Landing page + formulário de contato" minlength="3" maxlength="80"/>
-            <div class="help">3–80 chars. Evite nomes genéricos.</div>
-          </div>
+        <div class="field">
+          <label for="projName">0.1 Nome do projeto</label>
+          <input id="projName" type="text" placeholder="Ex.: Landing page + formulário de contato" minlength="3" maxlength="80"/>
+          <div class="help">3–80 chars. Evite nomes genéricos.</div>
+        </div>
 
-          <div class="field">
-            <label>0.2 Categoria principal</label>
-            <div class="radios" id="category">
-              <label><input type="radio" name="category" value="Digital/Software"> Digital/Software</label>
-              <label><input type="radio" name="category" value="Design/Conteúdo"> Design/Conteúdo</label>
-              <label><input type="radio" name="category" value="Consultoria/Treinamento"> Consultoria/Treinamento</label>
-              <label><input type="radio" name="category" value="Serviço presencial"> Serviço presencial</label>
-              <label><input type="radio" name="category" value="Produção física"> Produção física</label>
-              <label><input type="radio" name="category" value="Outro"> Outro</label>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>0.3 Local de execução</label>
-            <div class="radios" id="executionMode">
-              <label><input type="radio" name="executionMode" value="Remoto"> Remoto</label>
-              <label><input type="radio" name="executionMode" value="Presencial"> Presencial</label>
-              <label><input type="radio" name="executionMode" value="Híbrido"> Híbrido</label>
-            </div>
-            <div class="row" id="locationRow" hidden>
-              <input id="city" type="text" placeholder="Cidade" />
-              <input id="district" type="text" placeholder="Bairro (opcional)" />
-            </div>
-            <div class="help">Se Presencial/Híbrido, informe cidade/bairro (sem endereço exato).</div>
-          </div>
-
-          <div class="field">
-            <label>0.4 Prazo desejado</label>
-            <div class="row">
-              <input id="deadline" type="date" />
-              <label class="check"><input id="deadlineFlexible" type="checkbox"> Flexível</label>
-            </div>
-            <div class="row" id="shortDeadlineRow" hidden>
-              <input id="deadlineMotivation" type="text" placeholder="Motivação (se < 7 dias)" />
-              <input id="approvalAvailability" type="text" placeholder="Disponibilidade de aprovações (ex.: “respondo em até 4h úteis”)" />
-            </div>
+        <div class="field">
+          <label>0.2 Categoria principal</label>
+          <div class="radios" id="category">
+            <label><input type="radio" name="category" value="Digital/Software"> Digital/Software</label>
+            <label><input type="radio" name="category" value="Design/Conteúdo"> Design/Conteúdo</label>
+            <label><input type="radio" name="category" value="Consultoria/Treinamento"> Consultoria/Treinamento</label>
+            <label><input type="radio" name="category" value="Serviço presencial"> Serviço presencial</label>
+            <label><input type="radio" name="category" value="Produção física"> Produção física</label>
+            <label><input type="radio" name="category" value="Outro"> Outro</label>
           </div>
         </div>
+
+        <div class="field">
+          <label>0.3 Local de execução</label>
+          <div class="radios" id="executionMode">
+            <label><input type="radio" name="executionMode" value="Remoto"> Remoto</label>
+            <label><input type="radio" name="executionMode" value="Presencial"> Presencial</label>
+            <label><input type="radio" name="executionMode" value="Híbrido"> Híbrido</label>
+          </div>
+          <div class="row" id="locationRow" hidden>
+            <input id="city" type="text" placeholder="Cidade" />
+            <input id="district" type="text" placeholder="Bairro (opcional)" />
+          </div>
+          <div class="help">Se Presencial/Híbrido, informe cidade/bairro (sem endereço exato).</div>
+        </div>
+        
       </section>
 
       <!-- ===================== STEP 1 ===================== -->

@@ -94,11 +94,7 @@ function defaultState(){
       category: "",
       executionMode: "",
       city: "",
-      district: "",
-      deadline: "", // yyyy-mm-dd
-      flexible: false,
-      deadlineMotivation: "",
-      approvalAvailability: ""
+      district: ""
     },
     step1: {
       problem: "",
@@ -266,17 +262,7 @@ function updateConditionalVisibility(){
   const mode = state.step0.executionMode;
   $("#locationRow").hidden = !(mode === "Presencial" || mode === "Híbrido");
 
-  // Step 0: deadline < 7 dias => motivation+approval required
-  const flexible = state.step0.flexible;
-  const deadline = state.step0.deadline;
-  let short = false;
-  if (!flexible && deadline){
-    const today = new Date();
-    const d = new Date(deadline);
-    const diff = daysBetween(today, d);
-    if (diff >= 0 && diff < 7) short = true;
-  }
-  $("#shortDeadlineRow").hidden = !short;
+ 
 
   // Step 3: deps details visible if any checked
   const deps = state.step3.deps;
@@ -313,18 +299,8 @@ function bindInputs(){
   $("#city").addEventListener("input", e => { state.step0.city = e.target.value; saveState(); });
   $("#district").addEventListener("input", e => { state.step0.district = e.target.value; saveState(); });
 
-  $("#deadline").value = state.step0.deadline;
-  $("#deadlineFlexible").checked = state.step0.flexible;
-  $("#deadline").addEventListener("change", e => { state.step0.deadline = e.target.value; updateConditionalVisibility(); saveState(); });
-  $("#deadlineFlexible").addEventListener("change", e => {
-    state.step0.flexible = e.target.checked;
-    updateConditionalVisibility();
-    saveState();
-  });
-  $("#deadlineMotivation").value = state.step0.deadlineMotivation;
-  $("#approvalAvailability").value = state.step0.approvalAvailability;
-  $("#deadlineMotivation").addEventListener("input", e => { state.step0.deadlineMotivation = e.target.value; saveState(); });
-  $("#approvalAvailability").addEventListener("input", e => { state.step0.approvalAvailability = e.target.value; saveState(); });
+  
+ 
 
   // Step 1
   $("#problem").value = state.step1.problem;
@@ -879,20 +855,6 @@ function validateStep(step){
 
     if (state.step0.executionMode === "Presencial" || state.step0.executionMode === "Híbrido"){
       if (!state.step0.city.trim()) errs.push("0.3 Para Presencial/Híbrido, informe a cidade.");
-    }
-
-    if (!state.step0.flexible){
-      if (!state.step0.deadline) errs.push("0.4 Informe uma data de prazo ou marque “Flexível”.");
-      else{
-        const today = new Date();
-        const d = new Date(state.step0.deadline);
-        const diff = daysBetween(today, d);
-        if (diff < 0) errs.push("0.4 Prazo não pode estar no passado.");
-        if (diff >= 0 && diff < 7){
-          if (!state.step0.deadlineMotivation.trim()) errs.push("0.4 Prazo < 7 dias: informe a motivação.");
-          if (!state.step0.approvalAvailability.trim()) errs.push("0.4 Prazo < 7 dias: informe disponibilidade de aprovações.");
-        }
-      }
     }
   }
 
