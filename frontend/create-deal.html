@@ -177,25 +177,6 @@
           <label for="assumptions">3.3 Assunções</label>
           <textarea id="assumptions" rows="5" placeholder="1 por linha&#10;Ex.: Cliente fornece acesso ao ambiente&#10;Ex.: Dados estarão disponíveis"></textarea>
         </div>
-
-        <div class="field">
-          <label>3.4 Dependências externas</label>
-          <div class="checks" id="depsChecks">
-            <label><input type="checkbox" data-dep="localAccess"> Acesso a local?</label>
-            <label><input type="checkbox" data-dep="materials"> Fornecimento de material/equipamento?</label>
-            <label><input type="checkbox" data-dep="accounts"> Contas/APIs/chaves?</label>
-            <label><input type="checkbox" data-dep="thirdApproval"> Aprovação de terceiros?</label>
-          </div>
-
-          <div class="depsDetails" id="depsDetails" hidden>
-            <div class="help">Se marcou “sim”, preencha: quem fornece, quando, e o que acontece se atrasar.</div>
-            <div class="grid3">
-              <input id="depWho" type="text" placeholder="Quem fornece (nome/papel)" />
-              <input id="depWhen" type="text" placeholder="Quando (data/condição)" />
-              <input id="depIfLate" type="text" placeholder="Se atrasar, o que acontece? (impacto/ação)" />
-            </div>
-          </div>
-        </div>
       </section>
 
       <!-- ===================== STEP 4 ===================== -->

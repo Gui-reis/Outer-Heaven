@@ -110,14 +110,7 @@ function defaultState(){
     step3: {
       inScope: [],
       outScope: [],
-      assumptions: [],
-      deps: {
-        localAccess: false,
-        materials: false,
-        accounts: false,
-        thirdApproval: false,
-        details: { who:"", when:"", ifLate:"" }
-      }
+      assumptions: []
     },
     step4: {
       deliverables: [] // array of deliverable blocks
@@ -261,13 +254,6 @@ function updateConditionalVisibility(){
   const mode = state.step0.executionMode;
   $("#locationRow").hidden = !(mode === "Presencial" || mode === "Híbrido");
 
- 
-
-  // Step 3: deps details visible if any checked
-  const deps = state.step3.deps;
-  const anyDep = deps.localAccess || deps.materials || deps.accounts || deps.thirdApproval;
-  $("#depsDetails").hidden = !anyDep;
-
   // Step 5: LGPD details
   $("#lgpdRow").hidden = !state.step5.security.lgpd;
 
@@ -331,23 +317,7 @@ function bindInputs(){
   $("#outScope").addEventListener("input", e => { state.step3.outScope = linesToList(e.target.value); saveState(); });
   $("#assumptions").addEventListener("input", e => { state.step3.assumptions = linesToList(e.target.value); saveState(); });
 
-  // deps checkboxes
-  $$("#depsChecks input[type='checkbox']").forEach(cb => {
-    const key = cb.dataset.dep;
-    cb.checked = !!state.step3.deps[key];
-    cb.addEventListener("change", e => {
-      state.step3.deps[key] = e.target.checked;
-      updateConditionalVisibility();
-      saveState();
-    });
-  });
-  $("#depWho").value = state.step3.deps.details.who;
-  $("#depWhen").value = state.step3.deps.details.when;
-  $("#depIfLate").value = state.step3.deps.details.ifLate;
-  $("#depWho").addEventListener("input", e => { state.step3.deps.details.who = e.target.value; saveState(); });
-  $("#depWhen").addEventListener("input", e => { state.step3.deps.details.when = e.target.value; saveState(); });
-  $("#depIfLate").addEventListener("input", e => { state.step3.deps.details.ifLate = e.target.value; saveState(); });
-
+  
   // Step 4 (deliverables)
   $("#addDeliverable").addEventListener("click", () => {
     state.step4.deliverables.push(newDeliverable());
@@ -872,7 +842,7 @@ function validateStep(step){
 
   if (step === 3){
     const ins = state.step3.inScope || [];
-    
+
     ins.forEach((b, i) => {
       if (!validateNoScopeBroadWords(b)){
         errs.push(`3.1 Item ${i+1} contém “tudo/total/completo”. Detalhe melhor.`);
