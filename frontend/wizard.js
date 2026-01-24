@@ -552,8 +552,8 @@ function renderDeliverables(){
             ${optionList(d.formatMode, ["Sem formato específico", "Formatos", "Norma/padrão"])}
           </select>
           <div class="row" style="margin-top:10px">
-            <input type="text" data-k="formats" placeholder="Formatos (ex.: PDF, PNG, SVG)" value="${escapeHtml(d.formats)}"/>
-            <input type="text" data-k="standard" placeholder="Norma/padrão (ex.: ABNT, ISO...)" value="${escapeHtml(d.standard)}"/>
+            <input type="text" data-k="formats" placeholder="Formatos (ex.: PDF, PNG, SVG)" value="${escapeHtml(d.formats)}" hidden/>
+            <input type="text" data-k="standard" placeholder="Norma/padrão (ex.: ABNT, ISO...)" value="${escapeHtml(d.standard)}" hidden/>
           </div>
           <div class="help">Se tipo=arquivo, exija formato.</div>
         </div>
@@ -632,6 +632,29 @@ function renderDeliverables(){
       renderMilestones();
       saveState();
     });
+
+    div.addEventListener("change", (e) => {
+      
+      const el = e.target;
+      const k = el.dataset.k;
+
+      if(k !== "formatMode") return;
+    
+      const dRef = state.step4.deliverables[idx];
+      dRef.formatMode = el.value;
+
+      const formatsInput = div.querySelector('[data-k="formats"]');
+      const standardInput = div.querySelector('[data-k="standard"]');
+
+      formatsInput.hidden = true;
+      standardInput.hidden = true;
+
+      if (el.value === "Formatos") formatsInput.hidden = false;
+      else if (el.value === "Norma/padrão") standardInput.hidden = false;
+
+      saveState();
+    
+  });
 
     // acceptance radios
     $$(`input[name="acc_${d.id}"]`, div).forEach(r => {
