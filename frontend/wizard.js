@@ -153,15 +153,13 @@ function newDeliverable(){
     formatMode: "Sem formato específico", // or "Formatos", "Norma/padrão"
     formats: "", // e.g. PDF, PNG
     standard: "",
-    quantity: "",
-    variations: "",
+   
     acceptance: {
       mode: "", // "Checklist" | "Métrica" | "Evidência"
       checklist: [],
       metric: { value:"", unit:"" },
       evidenceType: "" // foto, video, log, relatorio, arquivo
-    },
-    revisions: { count: 0, rule: "", whatCounts: "" }
+    }
   };
 }
 
@@ -559,13 +557,7 @@ function renderDeliverables(){
         </div>
 
         <div class="field">
-          <label>4.${idx+1}.5 Quantidade e variações</label>
-          <input type="text" data-k="quantity" placeholder="Ex.: 3" value="${escapeHtml(d.quantity)}"/>
-          <textarea data-k="variations" rows="3" placeholder="Se várias variações, liste/tabela: onde será usado, medidas, modelo...">${escapeHtml(d.variations)}</textarea>
-        </div>
-
-        <div class="field">
-          <label>4.${idx+1}.6 Critérios de aceitação (obrigatório)</label>
+          <label>4.${idx+1}.5 Critérios de aceitação (obrigatório)</label>
           <div class="radios">
             <label><input type="radio" name="acc_${d.id}" value="Checklist" ${d.acceptance.mode==="Checklist"?"checked":""}/> Checklist binária (mín. 5)</label>
             <label><input type="radio" name="acc_${d.id}" value="Métrica" ${d.acceptance.mode==="Métrica"?"checked":""}/> Métrica/limite (com unidade)</label>
@@ -590,15 +582,7 @@ function renderDeliverables(){
           </div>
         </div>
 
-        <div class="field">
-          <label>4.${idx+1}.7 Revisões incluídas</label>
-          <div class="row">
-            <input type="number" min="0" max="5" data-k="revCount" value="${escapeHtml(d.revisions.count)}"/>
-            <span class="muted">rodadas</span>
-          </div>
-          <input type="text" data-k="revRule" placeholder="Regra (ex.: até 7 dias após entrega)" value="${escapeHtml(d.revisions.rule)}"/>
-          <input type="text" data-k="revWhatCounts" placeholder="O que conta como revisão (não virar mudança)" value="${escapeHtml(d.revisions.whatCounts)}"/>
-        </div>
+     
       </div>
     `;
 
@@ -618,13 +602,7 @@ function renderDeliverables(){
         dRef.acceptance.metric.unit = el.value;
       } else if (k === "accEvidenceType"){
         dRef.acceptance.evidenceType = el.value;
-      } else if (k === "revCount"){
-        dRef.revisions.count = Number(el.value || 0);
-      } else if (k === "revRule"){
-        dRef.revisions.rule = el.value;
-      } else if (k === "revWhatCounts"){
-        dRef.revisions.whatCounts = el.value;
-      } else {
+      }  else {
         dRef[k] = el.value;
       }
 
@@ -913,13 +891,7 @@ function validateStep(step){
         if (!d.acceptance.evidenceType) errs.push(`4.${idx}.6 Evidência: selecione um tipo anexável (foto/vídeo/log/relatório/arquivo).`);
       }
 
-      // revisions
-      const rc = Number(d.revisions.count || 0);
-      if (rc < 0 || rc > 5) errs.push(`4.${idx}.7 Revisões devem estar entre 0 e 5.`);
-      if (rc > 0){
-        if (!d.revisions.rule.trim()) errs.push(`4.${idx}.7 Revisões>0: informe a regra (prazo/condição).`);
-        if (!d.revisions.whatCounts.trim()) errs.push(`4.${idx}.7 Revisões>0: defina o que conta como revisão (não virar mudança).`);
-      }
+      
     });
   }
 
