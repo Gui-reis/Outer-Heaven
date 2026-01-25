@@ -565,15 +565,15 @@ function renderDeliverables(){
           </div>
 
           <div class="grid2" style="margin-top:10px">
-            <textarea data-k="accChecklist" rows="4" placeholder="Checklist (1 por linha, min 5)">${escapeHtml((d.acceptance.checklist||[]).join("\n"))}</textarea>
+            <textarea data-k="accChecklist" rows="4" placeholder="Checklist (1 por linha, min 5)" hidden>${escapeHtml((d.acceptance.checklist||[]).join("\n"))}</textarea>
 
             <div>
               <div class="row">
-                <input type="text" data-k="accMetricValue" placeholder="Métrica (ex.: até 2)" value="${escapeHtml(d.acceptance.metric?.value)}"/>
-                <input type="text" data-k="accMetricUnit" placeholder="Unidade (s, %, mm...)" value="${escapeHtml(d.acceptance.metric?.unit)}"/>
+                <input type="text" data-k="accMetricValue" placeholder="Métrica (ex.: até 2)" value="${escapeHtml(d.acceptance.metric?.value)}" hidden/>
+                <input type="text" data-k="accMetricUnit" placeholder="Unidade (s, %, mm...)" value="${escapeHtml(d.acceptance.metric?.unit)}" hidden/>
               </div>
               <div class="row" style="margin-top:10px">
-                <select data-k="accEvidenceType">
+                <select data-k="accEvidenceType" hidden>
                   ${optionList(d.acceptance.evidenceType, ["", "foto", "vídeo", "log", "relatório", "arquivo"])}
                 </select>
               </div>
@@ -585,6 +585,8 @@ function renderDeliverables(){
      
       </div>
     `;
+
+    applyAcceptanceVisibility(div, d.acceptance.mode);
 
     // bind interactions
     div.addEventListener("input", (e) => {
@@ -637,7 +639,37 @@ function renderDeliverables(){
     // acceptance radios
     $$(`input[name="acc_${d.id}"]`, div).forEach(r => {
       r.addEventListener("change", (e) => {
+        
         state.step4.deliverables[idx].acceptance.mode = e.target.value;
+
+        const accCheckList = div.querySelector('[data-k="accChecklist"]');
+        const accMetricValue = div.querySelector('[data-k="accMetricValue"]');
+        const accMetricUnit = div.querySelector('[data-k="accMetricUnit"]');
+        const accEvidenceType = div.querySelector('[data-k="accEvidenceType"]');
+
+
+        accCheckList.hidden = true;
+        accMetricValue.hidden = true;
+        accMetricUnit.hidden = true;
+        accEvidenceType.hidden = true;
+
+
+        if(e.target.value === "Checklist")
+        {
+          accCheckList.hidden = false;
+        }
+
+        else if(e.target.value === "Métrica")
+        {
+          accMetricValue.hidden = false;
+          accMetricUnit.hidden = false;
+        }
+
+        else
+        {
+          accEvidenceType.hidden = false;
+        }
+
         saveState();
       });
     });
@@ -669,6 +701,17 @@ function renderDeliverables(){
 
     root.appendChild(div);
   });
+}
+
+function applyAcceptanceVisibility(div, mode){
+  const accCheckList = div.querySelector('[data-k="accChecklist"]');
+  const accMetricValue = div.querySelector('[data-k="accMetricValue"]');
+  const accMetricUnit = div.querySelector('[data-k="accMetricUnit"]');
+  const accEvidenceType = div.querySelector('[data-k="accEvidenceType"]');
+
+  accCheckList.hidden = mode !== "Checklist";
+  accMetricValue.hidden = accMetricUnit.hidden = mode !== "Métrica";
+  accEvidenceType.hidden = mode !== "Evidência";
 }
 
 /* ============ Render: Milestones ============ */
@@ -802,6 +845,7 @@ function renderMilestones(){
     root.appendChild(div);
   });
 }
+
 
 /* ============ Validation per step ============ */
 function validateStep(step){
