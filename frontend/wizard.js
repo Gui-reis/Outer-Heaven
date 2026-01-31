@@ -172,7 +172,7 @@ function setActiveStep(n){
   stepButtons.forEach(b => b.classList.toggle("active", Number(b.dataset.step) === currentStep));
 
   // progress UI
-  const pct = Math.round((currentStep/9)*100);
+  const pct = Math.round((currentStep/6)*100);
   $("#progressFill").style.width = `${pct}%`;
   $("#progressLabel").textContent = (currentStep <= 8) ? `Etapa ${currentStep}` : "Resumo";
   $("#progressPct").textContent = `${pct}%`;
@@ -195,7 +195,7 @@ function setActiveStep(n){
   clearErrors();
 
   // quando entra no resumo, renderiza JSON
-  if (currentStep === 9){
+  if (currentStep === 6){
     renderSummary();
   }
   updateConditionalVisibility();
