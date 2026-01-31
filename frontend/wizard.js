@@ -116,7 +116,7 @@ function defaultState(){
       deliverables: [] // array of deliverable blocks
     },
     
-    step8: {
+    step5: {
       milestones: [] // {name, deliverableIds[], acceptChecklist[], evidenceMin, valuePct, etaMinDays, etaMaxDays}
     }
   };
@@ -296,8 +296,8 @@ function bindInputs(){
     saveState();
   });
 
-  // Step 8
-  $("#milestoneCount").value = state.step8.milestones.length ? state.step8.milestones.length : "";
+  // Step 5
+  $("#milestoneCount").value = state.step5.milestones.length ? state.step5.milestones.length : "";
   $("#applyMilestoneCount").addEventListener("click", () => {
     const n = clamp(Number($("#milestoneCount").value || 1), 1, 10);
     applyMilestoneCount(n);
@@ -366,7 +366,7 @@ function bindInputs(){
   }
   renderDeliverables();
 
-  if (!state.step8.milestones || state.step8.milestones.length === 0){
+  if (!state.step5.milestones || state.step5.milestones.length === 0){
     applyMilestoneCount(1);
   }
   renderMilestones();
@@ -594,7 +594,7 @@ function renderDeliverables(){
       }
       state.step4.deliverables.splice(idx, 1);
       // remove IDs selecionados em milestones
-      state.step8.milestones.forEach(m => {
+      state.step5.milestones.forEach(m => {
         m.deliverableIds = (m.deliverableIds||[]).filter(id => state.step4.deliverables.some(d2 => d2.id === id));
       });
       renderDeliverables();
@@ -631,10 +631,10 @@ function applyMilestoneCount(n){
   n = clamp(Number(n||1), 1, 10);
 
   // ajusta tamanho mantendo o que já existe
-  const current = state.step8.milestones.length;
+  const current = state.step5.milestones.length;
   if (current < n){
     for (let i=current; i<n; i++){
-      state.step8.milestones.push({
+      state.step5.milestones.push({
         name: "",
         deliverableIds: [],
         acceptChecklist: [],
@@ -645,7 +645,7 @@ function applyMilestoneCount(n){
       });
     }
   } else if (current > n){
-    state.step8.milestones = state.step8.milestones.slice(0, n);
+    state.step5.milestones = state.step5.milestones.slice(0, n);
   }
 }
 
@@ -655,7 +655,7 @@ function renderMilestones(){
 
   const deliverables = state.step4.deliverables || [];
 
-  state.step8.milestones.forEach((m, idx) => {
+  state.step5.milestones.forEach((m, idx) => {
     const div = document.createElement("div");
     div.className = "block";
 
@@ -721,9 +721,9 @@ function renderMilestones(){
       if (!k) return;
 
       if (k === "acceptChecklist"){
-        state.step8.milestones[idx].acceptChecklist = linesToList(el.value);
+        state.step5.milestones[idx].acceptChecklist = linesToList(el.value);
       } else {
-        state.step8.milestones[idx][k] = el.value;
+        state.step5.milestones[idx][k] = el.value;
       }
       saveState();
     });
@@ -732,11 +732,11 @@ function renderMilestones(){
     $$("input[type='checkbox'][data-dlid]", div).forEach(cb => {
       cb.addEventListener("change", (e) => {
         const id = e.target.dataset.dlid;
-        const arr = state.step8.milestones[idx].deliverableIds || [];
+        const arr = state.step5.milestones[idx].deliverableIds || [];
         if (e.target.checked){
           if (!arr.includes(id)) arr.push(id);
         } else {
-          state.step8.milestones[idx].deliverableIds = arr.filter(x => x !== id);
+          state.step5.milestones[idx].deliverableIds = arr.filter(x => x !== id);
         }
         saveState();
       });
@@ -744,12 +744,12 @@ function renderMilestones(){
 
     // remove
     div.querySelector("[data-act='remove']").addEventListener("click", () => {
-      if (state.step8.milestones.length === 1){
+      if (state.step5.milestones.length === 1){
         alert("Mantenha pelo menos 1 milestone.");
         return;
       }
-      state.step8.milestones.splice(idx, 1);
-      $("#milestoneCount").value = state.step8.milestones.length;
+      state.step5.milestones.splice(idx, 1);
+      $("#milestoneCount").value = state.step5.milestones.length;
       renderMilestones();
       saveState();
     });
@@ -851,8 +851,8 @@ function validateStep(step){
     });
   }
 
-  if (step === 8){
-    const ms = state.step8.milestones || [];
+  if (step === 5){
+    const ms = state.step5.milestones || [];
     if (ms.length < 1) errs.push("8: Crie pelo menos 1 milestone.");
 
     if ((state.step4.deliverables||[]).length < 1){
@@ -911,7 +911,7 @@ function buildExport(){
 
   // milestones: incluir “deliverablesRefs” human friendly
   const byId = new Map(exportObj.step4.deliverables.map(d => [d.id, d]));
-  exportObj.step8.milestones = exportObj.step8.milestones.map((m, i) => ({
+  exportObj.step5.milestones = exportObj.step5.milestones.map((m, i) => ({
     ...m,
     index: i+1,
     deliverablesRefs: (m.deliverableIds||[]).map(id => ({
@@ -962,7 +962,7 @@ function hydrateAll(){
   if (!state.step4.deliverables || state.step4.deliverables.length === 0){
     state.step4.deliverables = [newDeliverable()];
   }
-  if (!state.step8.milestones || state.step8.milestones.length === 0){
+  if (!state.step5.milestones || state.step5.milestones.length === 0){
     applyMilestoneCount(1);
   }
 
