@@ -50,7 +50,6 @@
         <button class="step" data-step="2" type="button"><span class="step__n">2</span> Stakeholders</button>
         <button class="step" data-step="3" type="button"><span class="step__n">3</span> Escopo</button>
         <button class="step" data-step="4" type="button"><span class="step__n">4</span> Entregáveis</button>
-        <button class="step" data-step="7" type="button"><span class="step__n">7</span> Change Request</button>
         <button class="step" data-step="8" type="button"><span class="step__n">8</span> Milestones</button>
         <button class="step" data-step="9" type="button"><span class="step__n">✓</span> Resumo</button>
       </nav>
@@ -186,30 +185,6 @@
 
         <div class="row">
           <button class="btn btn--primary" type="button" id="addDeliverable">+ Adicionar entregável</button>
-        </div>
-      </section>
-
-      <!-- ===================== STEP 7 ===================== -->
-      <section class="stepPane" data-pane="7">
-        <h2>Etapa 7 — Mudança de escopo (Change Request)</h2>
-
-        <div class="field">
-          <label>7.1 Você permite mudanças de escopo?</label>
-          <div class="radios" id="crPolicy">
-            <label><input type="radio" name="crPolicy" value="Sim, via CR"> Sim, via CR</label>
-            <label><input type="radio" name="crPolicy" value="Não, apenas novo contrato"> Não, apenas novo contrato</label>
-          </div>
-        </div>
-
-        <div class="field" id="crFormBlock" hidden>
-          <label>7.2 Formulário de CR (modelo obrigatório)</label>
-          <div class="grid2">
-            <textarea id="crWhat" rows="3" placeholder="O que mudar"></textarea>
-            <textarea id="crWhy" rows="3" placeholder="Por quê"></textarea>
-            <textarea id="crImpact" rows="3" placeholder="Impacto (prazo/custo/entregáveis)"></textarea>
-            <label class="check"><input id="crApproverRequired" type="checkbox"> Exigir aprovação do decisor final</label>
-          </div>
-          <div class="help">No MVP, isso é um template. Mais tarde o backend gera “aditivo” e atualiza milestones.</div>
         </div>
       </section>
 

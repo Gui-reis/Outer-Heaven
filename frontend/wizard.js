@@ -116,10 +116,6 @@ function defaultState(){
       deliverables: [] // array of deliverable blocks
     },
     
-    step7: {
-      crPolicy: "",
-      crTemplate: { what:"", why:"", impact:"", approverRequired: false }
-    },
     step8: {
       milestones: [] // {name, deliverableIds[], acceptChecklist[], evidenceMin, valuePct, etaMinDays, etaMaxDays}
     }
@@ -234,8 +230,6 @@ function updateConditionalVisibility(){
   const mode = state.step0.executionMode;
   $("#locationRow").hidden = !(mode === "Presencial" || mode === "Híbrido");
 
-  // Step 7: show CR template only if policy allows
-  $("#crFormBlock").hidden = !(state.step7.crPolicy === "Sim, via CR");
 }
 
 /* ============ Bind inputs (Step 0..8) ============ */
@@ -301,27 +295,6 @@ function bindInputs(){
     renderDeliverables();
     saveState();
   });
-
- 
-
-  // Step 7
-  $$("input[name='crPolicy']").forEach(r => {
-    r.checked = (r.value === state.step7.crPolicy);
-    r.addEventListener("change", e => {
-      state.step7.crPolicy = e.target.value;
-      updateConditionalVisibility();
-      saveState();
-    });
-  });
-  $("#crWhat").value = state.step7.crTemplate.what;
-  $("#crWhy").value = state.step7.crTemplate.why;
-  $("#crImpact").value = state.step7.crTemplate.impact;
-  $("#crApproverRequired").checked = state.step7.crTemplate.approverRequired;
-
-  $("#crWhat").addEventListener("input", e => { state.step7.crTemplate.what = e.target.value; saveState(); });
-  $("#crWhy").addEventListener("input", e => { state.step7.crTemplate.why = e.target.value; saveState(); });
-  $("#crImpact").addEventListener("input", e => { state.step7.crTemplate.impact = e.target.value; saveState(); });
-  $("#crApproverRequired").addEventListener("change", e => { state.step7.crTemplate.approverRequired = e.target.checked; saveState(); });
 
   // Step 8
   $("#milestoneCount").value = state.step8.milestones.length ? state.step8.milestones.length : "";
@@ -876,17 +849,6 @@ function validateStep(step){
 
       
     });
-  }
-
-  if (step === 7){
-    if (!state.step7.crPolicy) errs.push("7.1 Selecione a política de mudança de escopo.");
-
-    if (state.step7.crPolicy === "Sim, via CR"){
-      const t = state.step7.crTemplate;
-      if (!t.what.trim()) errs.push("7.2 CR: preencha “O que mudar”.");
-      if (!t.why.trim()) errs.push("7.2 CR: preencha “Por quê”.");
-      if (!t.impact.trim()) errs.push("7.2 CR: preencha “Impacto esperado”.");
-    }
   }
 
   if (step === 8){
