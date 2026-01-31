@@ -50,7 +50,6 @@
         <button class="step" data-step="2" type="button"><span class="step__n">2</span> Stakeholders</button>
         <button class="step" data-step="3" type="button"><span class="step__n">3</span> Escopo</button>
         <button class="step" data-step="4" type="button"><span class="step__n">4</span> Entregáveis</button>
-        <button class="step" data-step="6" type="button"><span class="step__n">6</span> Aceite/Disputa</button>
         <button class="step" data-step="7" type="button"><span class="step__n">7</span> Change Request</button>
         <button class="step" data-step="8" type="button"><span class="step__n">8</span> Milestones</button>
         <button class="step" data-step="9" type="button"><span class="step__n">✓</span> Resumo</button>
@@ -187,39 +186,6 @@
 
         <div class="row">
           <button class="btn btn--primary" type="button" id="addDeliverable">+ Adicionar entregável</button>
-        </div>
-      </section>
-
-      <!-- ===================== STEP 6 ===================== -->
-      <section class="stepPane" data-pane="6">
-        <h2>Etapa 6 — Processo de aceite e disputa</h2>
-
-        <div class="field">
-          <label>6.1 Como o cliente aprova um entregável?</label>
-          <div class="radios" id="acceptMethod">
-            <label><input type="radio" name="acceptMethod" value="Checklist na plataforma"> Checklist de aceite na plataforma</label>
-            <label><input type="radio" name="acceptMethod" value="Evidência anexada + Aprovar"> Evidência anexada + “Aprovar”</label>
-            <label><input type="radio" name="acceptMethod" value="Vídeo chamada + ata"> Aprovação por vídeo chamada + ata (anexo)</label>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>6.2 Prazo máximo para revisar e aprovar/reprovar</label>
-          <div class="row">
-            <input id="reviewDays" type="number" min="1" max="15" placeholder="5" />
-            <span class="muted">dias úteis</span>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div class="field">
-            <label for="defectVsChange_defect">6.3 Defeito (não conformidade) — exemplos</label>
-            <textarea id="defectVsChange_defect" rows="4" placeholder="Ex.: “não atende critério de aceite definido”"></textarea>
-          </div>
-          <div class="field">
-            <label for="defectVsChange_change">6.3 Mudança de escopo — exemplos</label>
-            <textarea id="defectVsChange_change" rows="4" placeholder="Ex.: “novo requisito não previsto”"></textarea>
-          </div>
         </div>
       </section>
 

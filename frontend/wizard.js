@@ -116,12 +116,6 @@ function defaultState(){
       deliverables: [] // array of deliverable blocks
     },
     
-    step6: {
-      acceptMethod: "",
-      reviewDays: "",
-      defectExamples: "",
-      changeExamples: ""
-    },
     step7: {
       crPolicy: "",
       crTemplate: { what:"", why:"", impact:"", approverRequired: false }
@@ -308,18 +302,7 @@ function bindInputs(){
     saveState();
   });
 
-  // Step 6
-  $$("input[name='acceptMethod']").forEach(r => {
-    r.checked = (r.value === state.step6.acceptMethod);
-    r.addEventListener("change", e => { state.step6.acceptMethod = e.target.value; saveState(); });
-  });
-  $("#reviewDays").value = state.step6.reviewDays;
-  $("#reviewDays").addEventListener("input", e => { state.step6.reviewDays = e.target.value; saveState(); });
-
-  $("#defectVsChange_defect").value = state.step6.defectExamples;
-  $("#defectVsChange_change").value = state.step6.changeExamples;
-  $("#defectVsChange_defect").addEventListener("input", e => { state.step6.defectExamples = e.target.value; saveState(); });
-  $("#defectVsChange_change").addEventListener("input", e => { state.step6.changeExamples = e.target.value; saveState(); });
+ 
 
   // Step 7
   $$("input[name='crPolicy']").forEach(r => {
@@ -893,15 +876,6 @@ function validateStep(step){
 
       
     });
-  }
-
-  if (step === 6){
-    if (!state.step6.acceptMethod) errs.push("6.1 Selecione um método de aceite.");
-    const rd = Number(state.step6.reviewDays || 0);
-    if (!rd || rd < 1 || rd > 15) errs.push("6.2 Informe prazo de revisão (1–15 dias úteis).");
-
-    if (!state.step6.defectExamples.trim()) errs.push("6.3 Informe exemplos de defeito (não conformidade).");
-    if (!state.step6.changeExamples.trim()) errs.push("6.3 Informe exemplos de mudança de escopo.");
   }
 
   if (step === 7){
