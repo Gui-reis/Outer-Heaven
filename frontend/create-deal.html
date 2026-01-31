@@ -50,7 +50,6 @@
         <button class="step" data-step="2" type="button"><span class="step__n">2</span> Stakeholders</button>
         <button class="step" data-step="3" type="button"><span class="step__n">3</span> Escopo</button>
         <button class="step" data-step="4" type="button"><span class="step__n">4</span> Entregáveis</button>
-        <button class="step" data-step="5" type="button"><span class="step__n">5</span> Qualidade</button>
         <button class="step" data-step="6" type="button"><span class="step__n">6</span> Aceite/Disputa</button>
         <button class="step" data-step="7" type="button"><span class="step__n">7</span> Change Request</button>
         <button class="step" data-step="8" type="button"><span class="step__n">8</span> Milestones</button>
@@ -188,54 +187,6 @@
 
         <div class="row">
           <button class="btn btn--primary" type="button" id="addDeliverable">+ Adicionar entregável</button>
-        </div>
-      </section>
-
-      <!-- ===================== STEP 5 ===================== -->
-      <section class="stepPane" data-pane="5">
-        <h2>Etapa 5 — Qualidade do serviço (SLA do projeto)</h2>
-
-        <div class="grid2">
-          <div class="field">
-            <label>5.1 Tempo de resposta</label>
-            <div class="row">
-              <input id="respTime" type="number" min="1" placeholder="24" />
-              <select id="respUnit">
-                <option value="h úteis">h úteis</option>
-                <option value="h">h</option>
-                <option value="dias úteis">dias úteis</option>
-                <option value="dias">dias</option>
-              </select>
-            </div>
-            <div class="help">Ex.: “até 24h úteis”.</div>
-          </div>
-
-          <div class="field">
-            <label for="workWindows">5.2 Janelas de trabalho/atendimento</label>
-            <input id="workWindows" type="text" placeholder="Ex.: Seg–Sex 9h–18h BRT" />
-          </div>
-
-          <div class="field">
-            <label>5.3 Prazo para correção pós-aceite</label>
-            <div class="row">
-              <input id="warrantyDays" type="number" min="0" placeholder="7" />
-              <span class="muted">dias</span>
-            </div>
-            <input id="severities" type="text" placeholder="Se citar “sem bugs”, descreva severidades (crítico/alto/médio/baixo) e prazos." />
-          </div>
-
-          <div class="field">
-            <label>5.4 Segurança/confidencialidade</label>
-            <div class="checks">
-              <label><input id="nda" type="checkbox"> NDA/confidencial</label>
-              <label><input id="lgpd" type="checkbox"> Dados sensíveis (LGPD)</label>
-              <label><input id="storage" type="checkbox"> Armazenamento e descarte</label>
-            </div>
-            <div class="row" id="lgpdRow" hidden>
-              <input id="lgpdWhat" type="text" placeholder="Quais dados?" />
-              <input id="lgpdHowLong" type="text" placeholder="Guardar por quanto tempo?" />
-            </div>
-          </div>
         </div>
       </section>
 

@@ -115,19 +115,7 @@ function defaultState(){
     step4: {
       deliverables: [] // array of deliverable blocks
     },
-    step5: {
-      responseTime: { value: "", unit: "h úteis" },
-      workWindows: "",
-      warrantyDays: "",
-      severities: "",
-      security: {
-        nda: false,
-        lgpd: false,
-        storage: false,
-        lgpdWhat: "",
-        lgpdHowLong: ""
-      }
-    },
+    
     step6: {
       acceptMethod: "",
       reviewDays: "",
@@ -252,9 +240,6 @@ function updateConditionalVisibility(){
   const mode = state.step0.executionMode;
   $("#locationRow").hidden = !(mode === "Presencial" || mode === "Híbrido");
 
-  // Step 5: LGPD details
-  $("#lgpdRow").hidden = !state.step5.security.lgpd;
-
   // Step 7: show CR template only if policy allows
   $("#crFormBlock").hidden = !(state.step7.crPolicy === "Sim, via CR");
 }
@@ -322,35 +307,6 @@ function bindInputs(){
     renderDeliverables();
     saveState();
   });
-
-  // Step 5
-  $("#respTime").value = state.step5.responseTime.value;
-  $("#respUnit").value = state.step5.responseTime.unit;
-  $("#workWindows").value = state.step5.workWindows;
-  $("#warrantyDays").value = state.step5.warrantyDays;
-  $("#severities").value = state.step5.severities;
-
-  $("#respTime").addEventListener("input", e => { state.step5.responseTime.value = e.target.value; saveState(); });
-  $("#respUnit").addEventListener("change", e => { state.step5.responseTime.unit = e.target.value; saveState(); });
-  $("#workWindows").addEventListener("input", e => { state.step5.workWindows = e.target.value; saveState(); });
-  $("#warrantyDays").addEventListener("input", e => { state.step5.warrantyDays = e.target.value; saveState(); });
-  $("#severities").addEventListener("input", e => { state.step5.severities = e.target.value; saveState(); });
-
-  $("#nda").checked = state.step5.security.nda;
-  $("#lgpd").checked = state.step5.security.lgpd;
-  $("#storage").checked = state.step5.security.storage;
-  $("#lgpdWhat").value = state.step5.security.lgpdWhat;
-  $("#lgpdHowLong").value = state.step5.security.lgpdHowLong;
-
-  $("#nda").addEventListener("change", e => { state.step5.security.nda = e.target.checked; saveState(); });
-  $("#lgpd").addEventListener("change", e => {
-    state.step5.security.lgpd = e.target.checked;
-    updateConditionalVisibility();
-    saveState();
-  });
-  $("#storage").addEventListener("change", e => { state.step5.security.storage = e.target.checked; saveState(); });
-  $("#lgpdWhat").addEventListener("input", e => { state.step5.security.lgpdWhat = e.target.value; saveState(); });
-  $("#lgpdHowLong").addEventListener("input", e => { state.step5.security.lgpdHowLong = e.target.value; saveState(); });
 
   // Step 6
   $$("input[name='acceptMethod']").forEach(r => {
@@ -937,25 +893,6 @@ function validateStep(step){
 
       
     });
-  }
-
-  if (step === 5){
-    const rt = state.step5.responseTime.value;
-    if (!rt) errs.push("5.1 Informe tempo de resposta.");
-    if (!state.step5.workWindows.trim()) errs.push("5.2 Informe janelas de trabalho/atendimento.");
-
-    if (state.step5.security.lgpd){
-      if (!state.step5.security.lgpdWhat.trim()) errs.push("5.4 LGPD: informe quais dados.");
-      if (!state.step5.security.lgpdHowLong.trim()) errs.push("5.4 LGPD: informe por quanto tempo guardar.");
-    }
-
-    // se o usuário escrever "sem bugs" no campo de severities (ou qualquer lugar), exige severidades definidas
-    const sev = normalize(state.step5.severities);
-    if (sev.includes("sem bugs") || sev.includes("zero bugs")){
-      if (!sev.includes("crít") && !sev.includes("alto") && !sev.includes("médio") && !sev.includes("baixo")){
-        errs.push("5.3 Você citou “sem bugs”. Defina severidades (crítico/alto/médio/baixo) e prazos.");
-      }
-    }
   }
 
   if (step === 6){
