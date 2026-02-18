@@ -20,6 +20,13 @@ import {
 
 type Errors = string[];
 
+/**
+ * Fluxo [20]: carrega estado persistido do wizard.
+ * - Tenta ler do localStorage e faz merge com defaults para manter compatibilidade.
+ * - Em erro de parse, faz fallback seguro para estado inicial.
+ * - Quem chama: inicialização lazy do useState em CreateDealPage.
+ */
+
 function loadState(): WizardState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -31,7 +38,16 @@ function loadState(): WizardState {
   }
 }
 
+/**
+ * Fluxo [21]: página principal do wizard de criação de deal.
+ * - Controla estado, validações, navegação entre etapas e exportação do resumo final.
+ * - Quem chama: App quando a rota ativa é "/create".
+ */
 export default function CreateDealPage() {
+  /**
+   * Fluxo [21.1]: estado-fonte único do wizard inteiro.
+   * - Inicializa com dados persistidos (loadState) e garante 1 entregável/1 milestone mínimos.
+   */
   const [state, setState] = useState<WizardState>(() => {
     const s = loadState();
     // defaults úteis, igual ao init() do seu JS
@@ -54,7 +70,9 @@ export default function CreateDealPage() {
     return s;
   });
 
+  /** Fluxo [21.2]: controla qual etapa (0..6) está visível no painel. */
   const [currentStep, setCurrentStep] = useState<number>(0);
+  /** Fluxo [21.3]: armazena erros de validação da etapa atual para feedback visual. */
   const [errors, setErrors] = useState<Errors>([]);
 
   // ✅ Buffer local do textarea de checklist do milestone (pra não “brigar” com linesToList)
@@ -63,6 +81,10 @@ export default function CreateDealPage() {
   );
 
   // mantém o buffer alinhado quando aumenta/diminui quantidade de milestones
+  /**
+   * Fluxo [21.4]: sincroniza o buffer textual quando quantidade de milestones muda.
+   * - Evita sobrescrever o texto digitado enquanto usuário edita checklist.
+   */
   useEffect(() => {
     setMilestoneChecklistText((prev) => {
       const ms = state.step5.milestones || [];
@@ -72,7 +94,10 @@ export default function CreateDealPage() {
     // IMPORTANT: só depende do length pra não sobrescrever o que você está digitando
   }, [state.step5.milestones.length]);
 
-  // persist
+  /**
+   * Fluxo [21.5]: persistência automática no localStorage a cada alteração de estado.
+   * - Mantém updatedAt atualizado para rastrear última edição.
+   */
   useEffect(() => {
     const next = {
       ...state,
@@ -81,8 +106,10 @@ export default function CreateDealPage() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   }, [state]);
 
+  /** Fluxo [21.6]: percentual da barra de progresso lateral. */
   const pct = useMemo(() => Math.round((currentStep / 6) * 100), [currentStep]);
 
+  /** Fluxo [21.7]: dicas contextuais exibidas no rodapé conforme etapa ativa. */
   const stepHints = useMemo(
     () => [
       "Defina o serviço (o mínimo pra não virar ‘qualquer coisa’).",
@@ -96,10 +123,15 @@ export default function CreateDealPage() {
     []
   );
 
+  /** Fluxo [22]: limpa mensagens de erro antes de nova validação/navegação. */
   function clearErrors() {
     setErrors([]);
   }
 
+  /**
+   * Fluxo [23]: registra erros de validação e leva o usuário ao topo do painel.
+   * - Quem chama: goToStep, onNext e qualquer fluxo que bloqueia avanço por validação.
+   */
   function showErrors(errs: Errors) {
     setErrors(errs);
     // scroll pro topo do painel como seu JS
@@ -108,6 +140,10 @@ export default function CreateDealPage() {
     });
   }
 
+  /**
+   * Fluxo [24]: navegação lateral entre etapas com validação da etapa atual.
+   * - Quem chama: clique nos botões da sidebar.
+   */
   function goToStep(target: number) {
     const t = clamp(target, 0, 6);
     // valida etapa atual antes de sair (igual seu clique na sidebar)
@@ -120,6 +156,7 @@ export default function CreateDealPage() {
     setCurrentStep(t);
   }
 
+  /** Fluxo [25]: avança uma etapa após validar a etapa corrente. */
   function onNext() {
     const errs = validateStep(currentStep, state);
     if (errs.length) {
@@ -130,11 +167,16 @@ export default function CreateDealPage() {
     setCurrentStep((s) => clamp(s + 1, 0, 6));
   }
 
+  /** Fluxo [26]: volta uma etapa sem validar conteúdo. */
   function onBack() {
     clearErrors();
     setCurrentStep((s) => clamp(s - 1, 0, 6));
   }
 
+  /**
+   * Fluxo [27]: reinicia o wizard do zero (estado + localStorage).
+   * - Quem chama: botão "Reset" no topo da tela.
+   */
   function resetAll() {
     if (!confirm("Tem certeza que deseja limpar os dados do wizard?")) return;
     localStorage.removeItem(STORAGE_KEY);
@@ -157,12 +199,14 @@ export default function CreateDealPage() {
     clearErrors();
   }
 
+  /** Fluxo [28]: copia para clipboard o JSON final da etapa de resumo. */
   async function copyJson() {
     const json = JSON.stringify(buildExport(state), null, 2);
     await navigator.clipboard.writeText(json);
     alert("JSON copiado!");
   }
 
+  /** Fluxo [29]: faz download local do JSON final. */
   function downloadJson() {
     const json = JSON.stringify(buildExport(state), null, 2);
     const blob = new Blob([json], { type: "application/json" });
@@ -175,6 +219,10 @@ export default function CreateDealPage() {
   }
 
   // helpers de update de estado (imutável)
+  /**
+   * Fluxo [30]: coleção central de handlers de formulário por etapa.
+   * - Cada callback é chamado por onChange/onClick dos campos e atualiza apenas o trecho necessário do estado.
+   */
   const update = {
     step0: {
       setProjectName: (v: string) => setState((s) => ({ ...s, step0: { ...s.step0, projectName: v } })),
@@ -334,8 +382,10 @@ export default function CreateDealPage() {
     },
   };
 
+  /** Fluxo [21.8]: habilita campos de cidade/bairro somente para Presencial ou Híbrido. */
   const isLocationVisible = state.step0.executionMode === "Presencial" || state.step0.executionMode === "Híbrido";
 
+  /** Fluxo [21.9]: JSON final renderizado na etapa de resumo. */
   const summaryJson = useMemo(() => JSON.stringify(buildExport(state), null, 2), [state]);
 
   return (
@@ -1028,6 +1078,11 @@ export default function CreateDealPage() {
   );
 }
 
+/**
+ * Fluxo [31]: motor de validação por etapa do wizard.
+ * - Retorna lista de erros para bloquear avanço/navegação quando necessário.
+ * - Quem chama: goToStep e onNext antes de mudar a etapa atual.
+ */
 function validateStep(step: number, state: WizardState): Errors {
   const errs: string[] = [];
 

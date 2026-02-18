@@ -1,11 +1,25 @@
+/** Fluxo [4]: chave única para persistir o estado completo do wizard no localStorage. */
 export const STORAGE_KEY = "oh_wizard_deal_v1";
 
+/**
+ * Fluxo [5]: limita um número entre mínimo e máximo.
+ * - Usado por navegação de etapas e quantidade de milestones.
+ * - Quem chama: CreateDealPage (goToStep, onNext/onBack, applyMilestoneCount).
+ */
 export const clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
 
+/**
+ * Fluxo [6]: normaliza texto para validações (trim + lowercase).
+ * - Quem chama: quase todas as heurísticas de validação abaixo.
+ */
 export function normalize(s: unknown): string {
   return (s ?? "").toString().trim().toLowerCase();
 }
 
+/**
+ * Fluxo [7]: converte textarea (1 item por linha) em array limpo.
+ * - Quem chama: handlers de update das etapas 1, 3, 4 e 5.
+ */
 export function linesToList(text: string): string[] {
   return (text ?? "")
     .split("\n")
@@ -14,6 +28,7 @@ export function linesToList(text: string): string[] {
 }
 
 /* Heurísticas simples */
+/** Fluxo [6.1]: vocabulário de termos subjetivos usados nas validações anti-ambiguidade. */
 export const FUZZY_WORDS = [
   "bonito",
   "profissional",
@@ -39,15 +54,19 @@ export const FUZZY_WORDS = [
   "polido",
 ];
 
+/** Fluxo [6.2]: nomes genéricos proibidos para o campo de projeto. */
 export const GENERIC_PROJECT_NAMES = ["projeto", "serviço", "trabalho"];
 
+/** Fluxo [6.3]: unidades/indicadores que tornam critérios mensuráveis nas regras. */
 export const UNIT_HINTS = ["s", "ms", "%", "mm", "cm", "m", "km", "hora", "horas", "h", "dia", "dias", "página", "páginas", "kb", "mb", "gb", "dpi", "px", "fps", "r$", "usd", "brl", "min", "mins", "minuto", "minutos"];
 
+/** Fluxo [8]: detecta termos subjetivos/ambíguos em descrições. */
 export function containsFuzzy(text: string): boolean {
   const t = normalize(text);
   return FUZZY_WORDS.some((w) => t.includes(w));
 }
 
+/** Fluxo [9]: detecta presença de número/unidade para tornar critérios verificáveis. */
 export function containsSomeUnitOrNumber(text: string): boolean {
   const t = normalize(text);
   const hasDigit = /\d/.test(t);
@@ -55,6 +74,7 @@ export function containsSomeUnitOrNumber(text: string): boolean {
   return hasDigit || hasUnit;
 }
 
+/** Fluxo [10]: bloqueia nomes de projeto genéricos demais na etapa 0. */
 export function isTooGenericProjectName(name: string): boolean {
   const t = normalize(name);
   if (t.length === 0) return false;
@@ -63,6 +83,10 @@ export function isTooGenericProjectName(name: string): boolean {
   return false;
 }
 
+/**
+ * Fluxo [11]: heurística para detectar problema sem contexto suficiente.
+ * - Quem chama: validateStep na etapa 1.
+ */
 export function looksLikeNoContextProblem(text: string): boolean {
   const t = normalize(text);
   if (!t) return true;
@@ -74,11 +98,13 @@ export function looksLikeNoContextProblem(text: string): boolean {
   return false;
 }
 
+/** Fluxo [12]: valida se um bullet é verificável (não só "fuzzy"). */
 export function validateVerifiableBullet(item: string): boolean {
   if (containsFuzzy(item) && !containsSomeUnitOrNumber(item)) return false;
   return true;
 }
 
+/** Fluxo [13]: impede termos amplos demais no escopo (ex.: "tudo", "completo"). */
 export function validateNoScopeBroadWords(item: string): boolean {
   const t = normalize(item);
   const bad = ["completo", "total", "tudo", "toda", "inteiro", "100%", "full"].some((w) => t.includes(w));
@@ -121,6 +147,10 @@ export type WizardState = {
   step5: { milestones: Milestone[] };
 };
 
+/**
+ * Fluxo [14]: fábrica de estado inicial do wizard.
+ * - Quem chama: loadState(), resetAll() e merge inicial da página CreateDealPage.
+ */
 export function defaultState(): WizardState {
   return {
     meta: { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), version: 1 },
@@ -133,6 +163,10 @@ export function defaultState(): WizardState {
   };
 }
 
+/**
+ * Fluxo [15]: cria um entregável vazio com ID único para React e vínculo com milestones.
+ * - Quem chama: init do estado, botão "Adicionar", duplicação e reset do wizard.
+ */
 export function newDeliverable(): Deliverable {
   const id = (crypto as any).randomUUID ? (crypto as any).randomUUID() : String(Math.random()).slice(2);
   return {
@@ -152,6 +186,11 @@ export function newDeliverable(): Deliverable {
   };
 }
 
+/**
+ * Fluxo [16]: gera o JSON final pronto para exportar/salvar.
+ * - Enriquece com índices e referências legíveis de entregáveis por milestone.
+ * - Quem chama: preview da etapa 6, botão copiar e botão baixar JSON.
+ */
 export function buildExport(state: WizardState) {
   const exportObj: WizardState & any = JSON.parse(JSON.stringify(state));
 
@@ -179,10 +218,12 @@ export function buildExport(state: WizardState) {
 
 
 /* helpers usados no HTML antigo */
+/** Fluxo [17]: helper legado para listas de opções (mantido por compatibilidade). */
 export function optionListValues(values: string[]) {
   return values;
 }
 
+/** Fluxo [18]: escape defensivo de HTML (helper legado da versão anterior). */
 export function escapeHtml(str: unknown) {
   return (str ?? "")
     .toString()
@@ -193,6 +234,7 @@ export function escapeHtml(str: unknown) {
     .replaceAll("'", "&#039;");
 }
 
+/** Fluxo [19]: escape para atributos HTML (helper legado da versão anterior). */
 export function escapeAttr(str: unknown) {
   return escapeHtml(str).replaceAll("\n", " ");
 }
