@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
 import "../styles/styles.css";
 
+/**
+ * Fluxo [3]: página inicial (landing) do produto.
+ * - Mostra branding e os CTAs principais.
+ * - Ao clicar em "Criar deal", dispara navegação para /create via React Router.
+ * - Quem chama: o componente App quando a rota ativa é "/".
+ */
 export default function LandingPage() {
   return (
     <div>
@@ -36,6 +42,7 @@ export default function LandingPage() {
             Transforme um acordo em <span className="accent">entregas objetivas</span> — sem ambiguidade.
           </h1>
 
+          {/* Fluxo [3.1]: ações de entrada; Link chama o roteador sem recarregar a página. */}
           <div className="actions" aria-label="Ações principais">
             <Link className="btn btn--primary" to="/create">
               Criar deal
