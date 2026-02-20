@@ -14,17 +14,32 @@ import { Step6 } from "./create-deal/steps/Step6";
 import { type Errors, validateStep } from "./create-deal/validation/validateStep";
 
 export default function CreateDealPage() {
-  /** Fluxo [21]: página principal do wizard de criação de deal (orquestração/layout). */
+  /**
+   * Fluxo [21]: página principal do wizard de criação de deal (orquestração/layout).
+   * - Quem chama: App quando a rota ativa é "/create".
+   */
   const { state, setState, update } = useWizardState();
-  /** Fluxo [21.2]: controla qual etapa (0..6) está visível no painel. */
+  /**
+   * Fluxo [21.2]: controla qual etapa (0..6) está visível no painel.
+   * - Quem chama: render da própria CreateDealPage e handlers de navegação.
+   */
   const [currentStep, setCurrentStep] = useState<number>(0);
-  /** Fluxo [21.3]: armazena erros de validação da etapa atual para feedback visual. */
+  /**
+   * Fluxo [21.3]: armazena erros de validação da etapa atual para feedback visual.
+   * - Quem chama: showErrors/clearErrors.
+   */
   const [errors, setErrors] = useState<Errors>([]);
-  /** Fluxo [21.4]: buffer local do checklist de milestones para não perder ENTER/ESPAÇO durante edição. */
+  /**
+   * Fluxo [21.4]: buffer local do checklist de milestones para não perder ENTER/ESPAÇO durante edição.
+   * - Quem chama: render de Step5 e sincronização via useEffect.
+   */
   const [milestoneChecklistText, setMilestoneChecklistText] = useState<string[]>(() => (state.step5.milestones || []).map((m) => (m.acceptChecklist || []).join("\n")));
 
   useEffect(() => {
-    /** Fluxo [21.4.1]: mantém buffer textual alinhado quando quantidade de milestones muda. */
+    /**
+     * Fluxo [21.4.1]: mantém buffer textual alinhado quando quantidade de milestones muda.
+     * - Quem chama: ciclo de efeitos do React quando state.step5.milestones.length muda.
+     */
     setMilestoneChecklistText((prev) => {
       const ms = state.step5.milestones || [];
       const next = ms.map((m, i) => prev[i] ?? (m.acceptChecklist || []).join("\n"));
@@ -48,12 +63,18 @@ export default function CreateDealPage() {
   );
 
   function clearErrors() {
-    /** Fluxo [22]: limpa mensagens de erro antes de nova validação/navegação. */
+    /**
+     * Fluxo [22]: limpa mensagens de erro antes de nova validação/navegação.
+     * - Quem chama: goToStep, onNext, onBack e resetAll.
+     */
     setErrors([]);
   }
 
   function showErrors(errs: Errors) {
-    /** Fluxo [23]: registra erros e rola até #errors para feedback imediato. */
+    /**
+     * Fluxo [23]: registra erros e rola até #errors para feedback imediato.
+     * - Quem chama: goToStep e onNext quando validação falha.
+     */
     setErrors(errs);
     requestAnimationFrame(() => {
       document.getElementById("errors")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -61,7 +82,10 @@ export default function CreateDealPage() {
   }
 
   function goToStep(target: number) {
-    /** Fluxo [24]: navegação lateral com validação da etapa corrente antes de sair. */
+    /**
+     * Fluxo [24]: navegação lateral com validação da etapa corrente antes de sair.
+     * - Quem chama: clique nos botões da SideNav.
+     */
     const t = clamp(target, 0, 6);
     const errs = validateStep(currentStep, state);
     if (errs.length) {
@@ -73,7 +97,10 @@ export default function CreateDealPage() {
   }
 
   function onNext() {
-    /** Fluxo [25]: avança etapa somente se validação da atual passar. */
+    /**
+     * Fluxo [25]: avança etapa somente se validação da atual passar.
+     * - Quem chama: botão "Avançar" (#btnNext).
+     */
     const errs = validateStep(currentStep, state);
     if (errs.length) {
       showErrors(errs);
@@ -84,13 +111,19 @@ export default function CreateDealPage() {
   }
 
   function onBack() {
-    /** Fluxo [26]: volta uma etapa sem validar conteúdo. */
+    /**
+     * Fluxo [26]: volta uma etapa sem validar conteúdo.
+     * - Quem chama: botão "Voltar" (#btnBack).
+     */
     clearErrors();
     setCurrentStep((s) => clamp(s - 1, 0, 6));
   }
 
   function resetAll() {
-    /** Fluxo [27]: reinicia wizard (estado + localStorage) mantendo defaults mínimos de entregável/milestone. */
+    /**
+     * Fluxo [27]: reinicia wizard (estado + localStorage) mantendo defaults mínimos de entregável/milestone.
+     * - Quem chama: TopBar via botão "Reset" (#btnReset).
+     */
     if (!confirm("Tem certeza que deseja limpar os dados do wizard?")) return;
     localStorage.removeItem(STORAGE_KEY);
     const s = defaultState();
@@ -103,14 +136,20 @@ export default function CreateDealPage() {
   }
 
   async function copyJson() {
-    /** Fluxo [28]: copia o JSON final para clipboard. */
+    /**
+     * Fluxo [28]: copia o JSON final para clipboard.
+     * - Quem chama: Step6 via botão "Copiar JSON" (#btnExport).
+     */
     const json = JSON.stringify(buildExport(state), null, 2);
     await navigator.clipboard.writeText(json);
     alert("JSON copiado!");
   }
 
   function downloadJson() {
-    /** Fluxo [29]: faz download local do JSON final. */
+    /**
+     * Fluxo [29]: faz download local do JSON final.
+     * - Quem chama: Step6 via botão "Baixar .json" (#btnDownload).
+     */
     const json = JSON.stringify(buildExport(state), null, 2);
     const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
