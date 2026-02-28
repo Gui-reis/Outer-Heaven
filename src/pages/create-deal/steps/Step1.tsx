@@ -1,9 +1,16 @@
+import type { Dispatch, SetStateAction } from "react";
 import type { WizardState } from "../../../wizard/wizardLogic";
 import type { WizardUpdate } from "../hooks/useWizardState";
 
-type Step1Props = { currentStep: number; state: WizardState; update: WizardUpdate };
+type Step1Props = {
+  currentStep: number;
+  state: WizardState;
+  update: WizardUpdate;
+  successBulletsText: string;
+  setSuccessBulletsText: Dispatch<SetStateAction<string>>;
+};
 
-export function Step1({ currentStep, state, update }: Step1Props) {
+export function Step1({ currentStep, state, update, successBulletsText, setSuccessBulletsText }: Step1Props) {
   /** Fluxo [32.1]: renderiza campos da Etapa 1. Quem chama: CreateDealPage. */
   return (
     <section className={`stepPane ${currentStep === 1 ? "active" : ""}`} data-pane="1">
@@ -16,7 +23,17 @@ export function Step1({ currentStep, state, update }: Step1Props) {
 
       <div className="field">
         <label htmlFor="successBullets">1.2 Objetivos</label>
-        <textarea id="successBullets" rows={5} placeholder={"1 por linha\nEx.: Página carrega em até 2s em 4G\nEx.: Formulário envia email e salva no CRM"} value={(state.step1.successBullets ?? []).join("\n")} onChange={(e) => update.step1.setSuccessBulletsText(e.target.value)} />
+        <textarea
+          id="successBullets"
+          rows={5}
+          placeholder={"1 por linha\nEx.: Página carrega em até 2s em 4G\nEx.: Formulário envia email e salva no CRM"}
+          value={successBulletsText}
+          onChange={(e) => {
+            const txt = e.target.value;
+            setSuccessBulletsText(txt);
+            update.step1.setSuccessBulletsText(txt);
+          }}
+        />
         <div className="help">3–5 itens, verificáveis. Se aparecer fuzzy word, o wizard vai pedir métrica/checklist.</div>
       </div>
     </section>

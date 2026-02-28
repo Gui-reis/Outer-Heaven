@@ -29,6 +29,13 @@ export default function CreateDealPage() {
    * - Quem chama: showErrors/clearErrors.
    */
   const [errors, setErrors] = useState<Errors>([]);
+  const [successBulletsText, setSuccessBulletsText] = useState<string>(() => (state.step1.successBullets || []).join("\n"));
+  const [inScopeText, setInScopeText] = useState<string>(() => (state.step3.inScope || []).join("\n"));
+  const [outScopeText, setOutScopeText] = useState<string>(() => (state.step3.outScope || []).join("\n"));
+  const [assumptionsText, setAssumptionsText] = useState<string>(() => (state.step3.assumptions || []).join("\n"));
+  const [deliverableChecklistTextById, setDeliverableChecklistTextById] = useState<Record<string, string>>(() =>
+    Object.fromEntries((state.step4.deliverables || []).map((d) => [d.id, (d.acceptance.checklist || []).join("\n")]))
+  );
   /**
    * Fluxo [21.4]: buffer local do checklist de milestones para não perder ENTER/ESPAÇO durante edição.
    * - Quem chama: render de Step5 e sincronização via useEffect.
@@ -46,6 +53,7 @@ export default function CreateDealPage() {
       return next;
     });
   }, [state.step5.milestones.length]);
+
 
   const pct = useMemo(() => Math.round((currentStep / 6) * 100), [currentStep]);
 
@@ -130,6 +138,11 @@ export default function CreateDealPage() {
     s.step4.deliverables = [newDeliverable()];
     s.step5.milestones = [{ name: "", deliverableIds: [], acceptChecklist: [], evidenceMin: "", valuePct: "", etaMinDays: "", etaMaxDays: "" }];
     setState(s);
+    setSuccessBulletsText((s.step1.successBullets || []).join("\n"));
+    setInScopeText((s.step3.inScope || []).join("\n"));
+    setOutScopeText((s.step3.outScope || []).join("\n"));
+    setAssumptionsText((s.step3.assumptions || []).join("\n"));
+    setDeliverableChecklistTextById(Object.fromEntries((s.step4.deliverables || []).map((d) => [d.id, (d.acceptance.checklist || []).join("\n")])));
     setMilestoneChecklistText((s.step5.milestones || []).map((m) => (m.acceptChecklist || []).join("\n")));
     setCurrentStep(0);
     clearErrors();
@@ -195,10 +208,31 @@ export default function CreateDealPage() {
           </div>
 
           <Step0 currentStep={currentStep} state={state} update={update} isLocationVisible={isLocationVisible} />
-          <Step1 currentStep={currentStep} state={state} update={update} />
+          <Step1
+            currentStep={currentStep}
+            state={state}
+            update={update}
+            successBulletsText={successBulletsText}
+            setSuccessBulletsText={setSuccessBulletsText}
+          />
           <Step2 currentStep={currentStep} state={state} update={update} />
-          <Step3 currentStep={currentStep} state={state} update={update} />
-          <Step4 currentStep={currentStep} state={state} update={update} />
+          <Step3
+            currentStep={currentStep}
+            update={update}
+            inScopeText={inScopeText}
+            setInScopeText={setInScopeText}
+            outScopeText={outScopeText}
+            setOutScopeText={setOutScopeText}
+            assumptionsText={assumptionsText}
+            setAssumptionsText={setAssumptionsText}
+          />
+          <Step4
+            currentStep={currentStep}
+            state={state}
+            update={update}
+            deliverableChecklistTextById={deliverableChecklistTextById}
+            setDeliverableChecklistTextById={setDeliverableChecklistTextById}
+          />
           <Step5
             currentStep={currentStep}
             state={state}
