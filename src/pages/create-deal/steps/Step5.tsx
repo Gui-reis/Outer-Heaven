@@ -20,15 +20,13 @@ export function Step5({ currentStep, state, update, milestoneChecklistText, setM
         <label>5.1 Quantos milestones?</label>
         <div className="row">
           <input
+            key={state.step5.milestones.length}
             id="milestoneCount"
             type="number"
             min={1}
             max={10}
             placeholder="3"
-            value={state.step5.milestones.length ? String(state.step5.milestones.length) : ""}
-            onChange={() => {
-              /* somente display, botão Aplicar faz a mudança */
-            }}
+            defaultValue={state.step5.milestones.length ? String(state.step5.milestones.length) : ""}
           />
           <button
             className="btn btn--ghost"
