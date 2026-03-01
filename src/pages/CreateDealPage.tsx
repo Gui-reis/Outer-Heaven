@@ -148,33 +148,9 @@ export default function CreateDealPage() {
     clearErrors();
   }
 
-  async function copyJson() {
-    /**
-     * Fluxo [28]: copia o JSON final para clipboard.
-     * - Quem chama: Step6 via botão "Copiar JSON" (#btnExport).
-     */
-    const json = JSON.stringify(buildExport(state), null, 2);
-    await navigator.clipboard.writeText(json);
-    alert("JSON copiado!");
-  }
-
-  function downloadJson() {
-    /**
-     * Fluxo [29]: faz download local do JSON final.
-     * - Quem chama: Step6 via botão "Baixar .json" (#btnDownload).
-     */
-    const json = JSON.stringify(buildExport(state), null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "outerheaven_deal.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  }
 
   const isLocationVisible = state.step0.executionMode === "Presencial" || state.step0.executionMode === "Híbrido";
-  const summaryJson = useMemo(() => JSON.stringify(buildExport(state), null, 2), [state]);
+  const summary = useMemo(() => buildExport(state), [state]);
 
   return (
     <div>
@@ -240,7 +216,7 @@ export default function CreateDealPage() {
             milestoneChecklistText={milestoneChecklistText}
             setMilestoneChecklistText={setMilestoneChecklistText}
           />
-          <Step6 currentStep={currentStep} summaryJson={summaryJson} copyJson={copyJson} downloadJson={downloadJson} />
+          <Step6 currentStep={currentStep} summary={summary} />
 
           <div className="navBar">
             <button className="btn btn--ghost" type="button" id="btnBack" onClick={onBack} disabled={currentStep === 0}>
