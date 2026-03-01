@@ -1,16 +1,9 @@
-import type { Dispatch, SetStateAction } from "react";
 import { linesToList, optionListValues, type WizardState } from "../../../wizard/wizardLogic";
 import type { WizardUpdate } from "../hooks/useWizardState";
 
-type Step4Props = {
-  currentStep: number;
-  state: WizardState;
-  update: WizardUpdate;
-  deliverableChecklistTextById: Record<string, string>;
-  setDeliverableChecklistTextById: Dispatch<SetStateAction<Record<string, string>>>;
-};
+type Step4Props = { currentStep: number; state: WizardState; update: WizardUpdate };
 
-export function Step4({ currentStep, state, update, deliverableChecklistTextById, setDeliverableChecklistTextById }: Step4Props) {
+export function Step4({ currentStep, state, update }: Step4Props) {
   /** Fluxo [32.4]: renderiza campos dinâmicos de entregáveis da Etapa 4. Quem chama: CreateDealPage. */
   return (
     <section className={`stepPane ${currentStep === 4 ? "active" : ""}`} data-pane="4">
@@ -98,17 +91,7 @@ export function Step4({ currentStep, state, update, deliverableChecklistTextById
                   </div>
 
                   <div className="grid2" style={{ marginTop: 10 }}>
-                    <textarea
-                      rows={4}
-                      placeholder="Checklist (1 por linha, min 5)"
-                      hidden={!showChecklist}
-                      value={deliverableChecklistTextById[d.id] ?? (d.acceptance.checklist || []).join("\n")}
-                      onChange={(e) => {
-                        const txt = e.target.value;
-                        setDeliverableChecklistTextById((prev) => ({ ...prev, [d.id]: txt }));
-                        update.step4.updateDeliverableAcceptance(idx, { checklist: linesToList(txt) });
-                      }}
-                    />
+                    <textarea rows={4} placeholder="Checklist (1 por linha, min 5)" hidden={!showChecklist} value={(d.acceptance.checklist || []).join("\n")} onChange={(e) => update.step4.updateDeliverableAcceptance(idx, { checklist: linesToList(e.target.value) })} />
 
                     <div>
                       <div className="row">

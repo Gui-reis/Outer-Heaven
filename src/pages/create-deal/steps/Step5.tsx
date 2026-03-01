@@ -12,6 +12,40 @@ type Step5Props = {
 
 export function Step5({ currentStep, state, update, milestoneChecklistText, setMilestoneChecklistText }: Step5Props) {
   /** Fluxo [32.5]: renderiza milestones e mantém checklist textual em buffer. Quem chama: CreateDealPage. */
+  function applyMilestoneCount() {
+    const el = document.getElementById("milestoneCount") as HTMLInputElement | null;
+    const raw = (el?.value || "").trim();
+    const deliverablesCount = (state.step4.deliverables || []).length;
+
+    if (!/^\d+$/.test(raw)) {
+      alert("Informe um número inteiro de milestones.");
+      return;
+    }
+
+    const n = Number(raw);
+    if (n < 1) {
+      alert("A quantidade de milestones deve ser maior que zero.");
+      return;
+    }
+
+    if (deliverablesCount < 1) {
+      alert("Crie pelo menos 1 entregável na Etapa 4 antes de definir milestones.");
+      return;
+    }
+
+    if (n > deliverablesCount) {
+      alert(`A quantidade de milestones não pode ser maior que o número de entregáveis (${deliverablesCount}).`);
+      return;
+    }
+
+    if (n > 10) {
+      alert("A quantidade máxima de milestones é 10.");
+      return;
+    }
+
+    update.step5.applyMilestoneCount(clamp(n, 1, 10));
+  }
+
   return (
     <section className={`stepPane ${currentStep === 5 ? "active" : ""}`} data-pane="5">
       <h2>Etapa 5 — Milestones</h2>
@@ -22,9 +56,8 @@ export function Step5({ currentStep, state, update, milestoneChecklistText, setM
           <input
             key={state.step5.milestones.length}
             id="milestoneCount"
-            type="number"
-            min={1}
-            max={10}
+            type="text"
+            inputMode="numeric"
             placeholder="3"
             defaultValue={state.step5.milestones.length ? String(state.step5.milestones.length) : ""}
           />
@@ -32,11 +65,7 @@ export function Step5({ currentStep, state, update, milestoneChecklistText, setM
             className="btn btn--ghost"
             type="button"
             id="applyMilestoneCount"
-            onClick={() => {
-              const el = document.getElementById("milestoneCount") as HTMLInputElement | null;
-              const n = clamp(Number(el?.value || 1), 1, 10);
-              update.step5.applyMilestoneCount(n);
-            }}
+            onClick={applyMilestoneCount}
           >
             Aplicar
           </button>
