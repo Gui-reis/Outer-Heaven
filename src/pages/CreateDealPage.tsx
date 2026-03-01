@@ -47,6 +47,24 @@ export default function CreateDealPage() {
     });
   }, [state.step5.milestones.length]);
 
+  useEffect(() => {
+    /**
+     * Fluxo [21.4.2]: garante scroll vertical na rota /create mesmo após CSS global da landing.
+     * - Quem chama: ciclo de efeitos do React ao montar/desmontar CreateDealPage.
+     */
+    const prevOverflow = document.body.style.overflow;
+    const prevOverflowX = document.body.style.overflowX;
+    const prevOverflowY = document.body.style.overflowY;
+    document.body.style.overflowX = "hidden";
+    document.body.style.overflowY = "auto";
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.overflowX = prevOverflowX;
+      document.body.style.overflowY = prevOverflowY;
+    };
+  }, []);
+
   const pct = useMemo(() => Math.round((currentStep / 6) * 100), [currentStep]);
 
   const stepHints = useMemo(
