@@ -1,5 +1,5 @@
-import type { Dispatch, SetStateAction } from "react";
-import { clamp, linesToList, type WizardState } from "../../../wizard/wizardLogic";
+import { useRef, type Dispatch, type SetStateAction } from "react";
+import { linesToList, type WizardState } from "../../../wizard/wizardLogic";
 import type { WizardUpdate } from "../hooks/useWizardState";
 
 type Step5Props = {
@@ -12,6 +12,8 @@ type Step5Props = {
 
 export function Step5({ currentStep, state, update, milestoneChecklistText, setMilestoneChecklistText }: Step5Props) {
   /** Fluxo [32.5]: renderiza milestones e mantém checklist textual em buffer. Quem chama: CreateDealPage. */
+  const milestoneCountInputRef = useRef<HTMLInputElement | null>(null);
+
   return (
     <section className={`stepPane ${currentStep === 5 ? "active" : ""}`} data-pane="5">
       <h2>Etapa 5 — Milestones</h2>
@@ -20,23 +22,43 @@ export function Step5({ currentStep, state, update, milestoneChecklistText, setM
         <label>5.1 Quantos milestones?</label>
         <div className="row">
           <input
+            key={`milestone-count-${state.step5.milestones.length}`}
             id="milestoneCount"
-            type="number"
-            min={1}
-            max={10}
+            type="text"
+            inputMode="numeric"
             placeholder="3"
-            value={state.step5.milestones.length ? String(state.step5.milestones.length) : ""}
-            onChange={() => {
-              /* somente display, botão Aplicar faz a mudança */
-            }}
+            defaultValue={state.step5.milestones.length ? String(state.step5.milestones.length) : ""}
+            ref={milestoneCountInputRef}
           />
           <button
             className="btn btn--ghost"
             type="button"
             id="applyMilestoneCount"
             onClick={() => {
-              const el = document.getElementById("milestoneCount") as HTMLInputElement | null;
-              const n = clamp(Number(el?.value || 1), 1, 10);
+              const raw = milestoneCountInputRef.current?.value.trim() || "";
+              const n = Number(raw);
+              const deliverablesCount = state.step4.deliverables.length;
+
+              if (!raw || !Number.isInteger(n)) {
+                alert("Informe um número inteiro de milestones.");
+                return;
+              }
+
+              if (n <= 0) {
+                alert("A quantidade de milestones deve ser maior que zero.");
+                return;
+              }
+
+              if (n > deliverablesCount) {
+                alert(`A quantidade de milestones deve ser menor ou igual ao número de entregáveis (${deliverablesCount}).`);
+                return;
+              }
+
+              if (n > 10) {
+                alert("Por enquanto o limite máximo é 10 milestones.");
+                return;
+              }
+
               update.step5.applyMilestoneCount(n);
             }}
           >
