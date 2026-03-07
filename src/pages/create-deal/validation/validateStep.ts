@@ -12,6 +12,60 @@ import {
 export type Errors = string[];
 
 /**
+ * Fluxo [31.1]: lista IDs de entregáveis selecionados em todos os milestones.
+ * - Mantém a coleta em um único lugar para facilitar leitura e reuso.
+ */
+function collectMilestoneDeliverableIds(state: WizardState): string[] {
+  // 1) Garante array válido de milestones, mesmo quando vazio.
+  const milestones = state.step5.milestones || [];
+
+  // 2) Junta todos os IDs de entregáveis selecionados em cada milestone.
+  //    Ex.: [["a", "b"], ["c"]] => ["a", "b", "c"]
+  return milestones.flatMap((milestone) => milestone.deliverableIds || []);
+}
+
+/**
+ * Fluxo [31.2]: valida se TODOS os entregáveis da etapa 4 aparecem ao menos 1x nos milestones.
+ */
+function validateAllDeliverablesSelected(state: WizardState): boolean {
+  // 1) Cria conjunto com todos os IDs de entregáveis existentes na etapa 4.
+  const allDeliverableIds = new Set((state.step4.deliverables || []).map((d) => d.id));
+
+  // 2) Cria conjunto com os IDs escolhidos nos milestones.
+  const selectedIds = new Set(collectMilestoneDeliverableIds(state));
+
+  // 3) Se algum entregável da etapa 4 não estiver selecionado em nenhum milestone,
+  //    a regra falha.
+  for (const deliverableId of allDeliverableIds) {
+    if (!selectedIds.has(deliverableId)) return false;
+  }
+
+  // 4) Todos os entregáveis foram cobertos.
+  return true;
+}
+
+/**
+ * Fluxo [31.3]: valida se um entregável foi selecionado mais de 1x em milestones diferentes.
+ */
+function hasDuplicateDeliverableAcrossMilestones(state: WizardState): boolean {
+  // 1) Contagem simples de quantas vezes cada ID aparece na soma de todos os milestones.
+  const counter = new Map<string, number>();
+
+  for (const deliverableId of collectMilestoneDeliverableIds(state)) {
+    const current = counter.get(deliverableId) || 0;
+    counter.set(deliverableId, current + 1);
+  }
+
+  // 2) Se algum ID tiver mais de 1 ocorrência, há duplicidade.
+  for (const total of counter.values()) {
+    if (total > 1) return true;
+  }
+
+  // 3) Nenhum duplicado encontrado.
+  return false;
+}
+
+/**
  * Fluxo [31]: motor de validação por etapa do wizard.
  * - Retorna lista de erros para bloquear avanço/navegação quando necessário.
  * - Quem chama: goToStep e onNext em CreateDealPage.
@@ -127,6 +181,16 @@ export function validateStep(step: number, state: WizardState): Errors {
 
     if (Math.round(sum) !== 100) {
       errs.push(`8.4 A soma dos percentuais deve ser 100%. Atualmente: ${sum}%.`);
+    }
+
+    // Validação nova: todos os entregáveis da etapa 4 precisam aparecer nos milestones.
+    if (!validateAllDeliverablesSelected(state)) {
+      errs.push("8.2 Todos os entregáveis da etapa 4 devem ser selecionados na combinação dos milestones.");
+    }
+
+    // Validação nova: um mesmo entregável não pode ser reaproveitado em milestones diferentes.
+    if (hasDuplicateDeliverableAcrossMilestones(state)) {
+      errs.push("8.2 Um entregável não pode ser selecionado mais de uma vez em milestones diferentes.");
     }
   }
 
