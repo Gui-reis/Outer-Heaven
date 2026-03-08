@@ -1,0 +1,20 @@
+{
+  "name": "outer-heaven-backend",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Backend mínimo em Node.js + TypeScript para o projeto Outer Heaven.",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.3"
+  }
+}
