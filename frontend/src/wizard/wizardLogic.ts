@@ -3,8 +3,27 @@ export const STORAGE_KEY = "oh_wizard_deal_v1";
 
 /**
  * Fluxo [5]: limita um número entre mínimo e máximo.
- * - Usado por navegação de etapas e quantidade de milestones.
- * - Quem chama: CreateDealPage (goToStep, onNext/onBack, applyMilestoneCount).
+ *
+ * Usado por navegação de etapas e também na quantidade de milestones
+ * para garantir que nenhum valor saia do intervalo permitido pela UI.
+ *
+ * @param n Número de entrada a ser limitado.
+ * @param a Limite inferior (inclusive).
+ * @param b Limite superior (inclusive).
+ * @returns O número ajustado para o intervalo `[a, b]`.
+ *
+ * @remarks
+ * Chamadores principais: `CreateDealPage` (`goToStep`, `onNext`, `onBack`, `applyMilestoneCount`).
+ *
+ * @example
+ * ```ts
+ * clamp(10, 0, 6) // 6
+ * ```
+ *
+ * @example
+ * ```ts
+ * clamp(3, 0, 6) // 3
+ * ```
  */
 export const clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
 
@@ -188,8 +207,21 @@ export function newDeliverable(): Deliverable {
 
 /**
  * Fluxo [16]: gera o JSON final pronto para exportar/salvar.
- * - Enriquece com índices e referências legíveis de entregáveis por milestone.
- * - Quem chama: preview da etapa 6, botão copiar e botão baixar JSON.
+ *
+ * Também enriquece a estrutura com índices sequenciais e referências legíveis
+ * de entregáveis por milestone, facilitando revisão e auditoria do JSON final.
+ *
+ * @param state Estado atual completo do wizard.
+ * @returns Estrutura serializável pronta para exportação.
+ *
+ * @remarks
+ * Chamadores: preview da etapa 6, botão de copiar e botão de baixar JSON.
+ *
+ * @example
+ * ```ts
+ * const exportado = buildExport(estado);
+ * console.log(exportado.step4.deliverables[0].index); // 1
+ * ```
  */
 export function buildExport(state: WizardState) {
   const exportObj: WizardState & any = JSON.parse(JSON.stringify(state));
